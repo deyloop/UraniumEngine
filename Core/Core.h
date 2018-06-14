@@ -3,25 +3,31 @@
 #define	_CORE_H_
 
 #include "MessageClient.h"
+#include "ErrorCode.h"
 
 namespace u92 {
+
+	class OSFramework;
+
 	namespace core {
 		
-		class MessageBUs;
-
+		class MessageBus;
+		
 		class Core : public MessageClient {
 		public:
 			Core ( );
 			~Core ( );
 
-			void init ( );
-			void release ( );
+			ErrorCode	init ( );
+			void		release ( );
 			
 			void run ( );
 
 		private:
-			bool		m_running;
-			MessageBus* m_pMessageBus;
+			bool			m_running;
+
+			MessageBus*		m_pMessageBus;
+			OSFramework*	m_pOSFramework;
 		};
 	}
 }

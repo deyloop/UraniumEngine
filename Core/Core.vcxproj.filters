@@ -13,6 +13,21 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\OSFramework">
+      <UniqueIdentifier>{517a625f-d659-4d09-a1a9-956aca577afc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\OSFramework\Interfaces">
+      <UniqueIdentifier>{22e605f2-8dbe-465a-85ad-326bb70e789c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\OSFramework\Windows">
+      <UniqueIdentifier>{40fa65c3-6e76-4d31-8b04-64b1d8b90346}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\OSFramework">
+      <UniqueIdentifier>{0850f39b-d910-4d53-9de2-7458d3870209}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\OSFramework\Windows">
+      <UniqueIdentifier>{ab330fff-a627-44c6-afd4-d000e3eebe0c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source.cpp">
@@ -27,6 +42,18 @@
     <ClCompile Include="Core.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="WinMain.cpp">
+      <Filter>Source Files\OSFramework\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="WindowsGLGraphicsSubSystem.cpp">
+      <Filter>Source Files\OSFramework\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="WindowsInputSubSystem.cpp">
+      <Filter>Source Files\OSFramework\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="WindowsOSFramework.cpp">
+      <Filter>Source Files\OSFramework\Windows</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ThreadPool.h">
@@ -40,6 +67,36 @@
     </ClInclude>
     <ClInclude Include="Core.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ErrorCode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="InputEvent.h">
+      <Filter>Header Files\OSFramework\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="OSFramework.h">
+      <Filter>Header Files\OSFramework\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="OSGLGraphicsSubSystem.h">
+      <Filter>Header Files\OSFramework\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="OSInputSubSystem.h">
+      <Filter>Header Files\OSFramework\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowEvent.h">
+      <Filter>Header Files\OSFramework\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowsGLGraphicsSubSystem.h">
+      <Filter>Header Files\OSFramework\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowsInputSubSystem.h">
+      <Filter>Header Files\OSFramework\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowsOSFramework.h">
+      <Filter>Header Files\OSFramework\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="OSMessages.h">
+      <Filter>Header Files\OSFramework\Interfaces</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

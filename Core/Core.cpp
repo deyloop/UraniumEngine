@@ -1,10 +1,12 @@
 #include "Core.h"
 #include "MessageBus.h"
+#include "OSFramework.h"
 
 namespace u92 {
 	namespace core {
 		Core::Core ( ) {
-			m_pMessageBus = nullptr;
+			m_pMessageBus  = nullptr;
+			m_pOSFramework = nullptr;
 			m_running = false;
 		}
 		
@@ -12,9 +14,14 @@ namespace u92 {
 			release ( );
 		}
 
-		void Core::init ( ){
+		ErrorCode Core::init ( ){
 			m_pMessageBus = new MessageBus;
 			m_pMessageBus->registerClient (*this);
+
+			m_pOSFramework = OSFramework::getInstance ( );
+			m_pMessageBus->registerClient (*m_pOSFramework);
+
+			return E_CODE_SUCCESS;
 		}
 
 		void Core::release ( ) {
@@ -27,6 +34,11 @@ namespace u92 {
 		void Core::run ( ) {
 			m_running = true;
 			while (m_running) {
+				int result = m_pOSFramework->handleOSMessages ( );
+				if (result==E_CODE_QUIT_MESSAGE) {
+					m_running = false;
+					break;
+				}
 				m_pMessageBus->syncMessages ( );
 				m_pMessageBus->proccessMessages ( );
 			}
