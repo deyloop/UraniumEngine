@@ -3,87 +3,12 @@
 #include <functional>
 #include <type_traits>
 
-struct MessageHeader {
-	size_t type;
-	unsigned int index;
-};
 
-struct MessageStore {
-	std::vector<MessageHeader> headers;
-	std::vector<char> messages;
-};
+#include "MessageClient.h"
+using namespace u92::core;
+
 struct Channel {
 	MessageStore store;
-	std::vector<unsigned int> subscribers;
-};
-
-struct ClientChannel {
-	int chanelId;
-	MessageStore messages;
-};
-
-class MessageClient {
-	friend class MessageBus;
-public:
-protected:
-	template <typename Message>
-	void postMessage(const Message message, int channelId = 0) {
-		//first, get the channel
-		ClientChannel* destChannel = nullptr;
-		for (auto& channel : m_chanels) {
-			if (channel.chanelId == channelId) {
-				destChannel = &channel;
-				break;
-			}
-		}
-
-		if (destChannel == nullptr) {
-			//add channel to the client channels list.
-			ClientChannel newChanel;
-			newChanel.chanelId = channelId;
-			m_chanels.push_back(newChanel);
-			destChannel = &m_chanels.back();
-		}
-
-		MessageHeader header;
-		header.type = typeid(message).hash_code();
-		header.index = destChannel->messages.messages.size();
-		for (int i = 0; i < sizeof(Message); i++) destChannel->messages.messages.push_back('\0');
-		memcpy_s(&destChannel->messages.messages[header.index], sizeof(Message), &message, sizeof(message));
-		destChannel->messages.headers.push_back(header);
-	}
-
-	template <typename Message>
-	void registerHandler(std::function<void(const Message)> handler) {
-		m_handlers[typeid(Message).hash_code()] = [handler](const void* msg) {
-			handler(*((const Message*)msg));
-		};
-	}
-
-	void subscribe(int channelId) {
-		m_subscriptions.push_back(channelId);
-	}
-
-private:
-	void processMessages(const MessageStore& messages) {
-		if (messages.headers.size() == 0) return;
-		for (auto& header : messages.headers) {
-			//check if we handle such a type of message
-			if (m_handlers.find(header.type) == m_handlers.end()) {
-				//not found
-				continue;
-			}
-			else {
-				//process this thing.
-				(m_handlers[header.type])((const void*)(&messages.messages[header.index]));
-			}
-		}
-
-	}
-
-	std::vector<ClientChannel> m_chanels;
-	std::vector<int> m_subscriptions;
-	std::map<size_t, std::function<void(const void*)>> m_handlers;
 };
 
 #include "ThreadPool.h"
@@ -160,14 +85,28 @@ struct msg {
 	int i;
 };
 #include <iostream>
+class test : public MessageClient {
+public:
+	void init() {
+		subscribe(1);
+		registerHandler<msg>(std::bind(&test::handlemsg, this, std::placeholders::_1));
+	}
+private:
+	void handlemsg(const msg m) {
+		std::cout << "1: " << m.i << std::endl;
+	}
+};
 
-class Core : MessageClient {
+class Core : public MessageClient {
 public:
 	void init() {
 		m_messageBus.registerClient(*this);
 		registerHandler<msg>(std::bind(&Core::handlemsg, this, std::placeholders::_1));
 		subscribe(0);
 		subscribe(1);
+		t.init();
+		m_messageBus.registerClient(t);
+		
 	}
 
 	void run() {
@@ -185,9 +124,11 @@ private:
 		if (m.i % 2 == 0) {
 			postMessage<msg>({ m.i + 1 }, 0);
 		} else postMessage<msg>({ m.i + 1 }, 1);
+		if (m.i == 300) running = false;
 	}
 	bool running;
 	MessageBus m_messageBus;
+	test t;
 };
 
 int main() {
@@ -196,6 +137,6 @@ int main() {
 	core.init();
 	core.run();
 
-
+	system("pause");
 	return 0;
 }
