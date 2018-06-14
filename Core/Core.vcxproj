@@ -115,10 +115,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="MessageBus.cpp" />
     <ClCompile Include="MessageClient.cpp" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="MessageBus.h" />
     <ClInclude Include="MessageClient.h" />
     <ClInclude Include="ThreadPool.h" />
   </ItemGroup>
