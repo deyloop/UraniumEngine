@@ -22,7 +22,7 @@ RETURNS:
 -----------------------------------------------------------------------------*/
 int WINAPI WinMain (HINSTANCE instance,HINSTANCE prevInstance,
 					LPSTR cmdLine,int cmdShow) {
-	WindowsOSFramework* pOSFramework = WindowsOSFramework::getWindowsInstance ( );
+	WindowsOSFramework* pOSFramework = WindowsOSFramework::getWindowsInstance ( ); //singleton << design pattern
 	Core*				pCore = new Core;
 
 	//neccessary checks

@@ -1,6 +1,8 @@
 #include "Core.h"
 #include "MessageBus.h"
 #include "OSFramework.h"
+#include "OSMessages.h"
+#include <cstring>
 
 namespace u92 {
 	namespace core {
@@ -32,6 +34,20 @@ namespace u92 {
 		}
 
 		void Core::run ( ) {
+
+			m_pOSFramework->initSubSystem (SUBSYSTEM_ALL);
+
+			//temporary code
+			WindowCommand cmd;
+			cmd.type = WINDOWCOMMAND_CREATEWINDOW;
+			strcpy_s(cmd.command.createWindow.title,"Kuchbhi");
+			cmd.command.createWindow.fullscreen = false;
+			cmd.command.createWindow.height = 500;
+			cmd.command.createWindow.width = 500;
+
+			postMessage<WindowCommand> (cmd,10);
+			//end temporary
+
 			m_running = true;
 			while (m_running) {
 				int result = m_pOSFramework->handleOSMessages ( );

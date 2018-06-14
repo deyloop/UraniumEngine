@@ -19,6 +19,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ******************************************************************************/
 ///////////////////////////////////////////////////////////////////////////////
 #include "WindowsGLGraphicsSubSystem.h"
+#include "WindowsOSFramework.h"
+
 namespace u92 {
 	WindowsGLGraphicsSubSystem::WindowsGLGraphicsSubSystem() {
 
@@ -83,7 +85,30 @@ namespace u92 {
 	}
 	
 	int WindowsGLGraphicsSubSystem::handleCommandMsg(const WindowCommand msg){
+		switch (msg.type) {
+			case WINDOWCOMMAND_NONE: {
+				break;
+			}
+			case WINDOWCOMMAND_CREATEWINDOW: {
+				HWND window = CreateWindow (WindowsOSFramework::getWindowsInstance ( )->getWindowClass ( ).lpszClassName,
+											&msg.command.createWindow.title[0],
+											WS_OVERLAPPEDWINDOW|WS_VISIBLE,
+											CW_DEFAULT,CW_DEFAULT,
+											msg.command.createWindow.width,
+											msg.command.createWindow.height,
+											NULL,NULL,GetModuleHandle (NULL),
+											NULL
+										   );
+				UpdateWindow (window);
+				ShowWindow (window,3);
 
+				WindowsOSFramework::getWindowsInstance ( )->setWindowHandle (window);
+			} break;
+			
+			default: {
+				break;
+			}
+		}
 		return 0;
 	}
 }

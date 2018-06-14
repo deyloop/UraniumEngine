@@ -23,6 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define _WINDOWS_OS_FRAMEWORK_
 
 #include <Windows.h>
+#include <queue>
 #include "OSFramework.h"
 #include "OSMessages.h"
 
@@ -70,6 +71,9 @@ namespace u92 {
 
 		HWND m_windowHandle;
 		WNDCLASSEX m_windowClass;
+
+		std::queue<InputCommand> m_inputCommandQueue;
+		std::queue<WindowCommand> m_windowCommandQueue;
 	}; 
 }
 

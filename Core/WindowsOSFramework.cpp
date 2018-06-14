@@ -146,7 +146,21 @@ namespace u92 {
 
 	int WindowsOSFramework::handleOSMessages() {
 		int ret = E_CODE_SUCCESS;
-		MSG msg;
+
+		//check to see if internal queues have anything, if yes,
+		//process them from here.
+		
+		//Window command check
+		while (!m_inputCommandQueue.empty ( )) {
+			m_pInputSubSystem->handleCommandMsg (m_inputCommandQueue.front ( ));
+			m_inputCommandQueue.pop ( );
+		}
+
+		while (!m_windowCommandQueue.empty()) {
+			m_pGraphicsSubsystem->handleCommandMsg(m_windowCommandQueue.front ( ));
+			m_windowCommandQueue.pop ( );
+		}
+			MSG msg;
 		while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
 			if (msg.message == WM_QUIT) {
 				//return and error, so core will stop.
@@ -160,11 +174,11 @@ namespace u92 {
 	}
 
 	void WindowsOSFramework::handleWindowCommand (const WindowCommand msg) {
-		m_pGraphicsSubsystem->handleCommandMsg (msg);
+		m_windowCommandQueue.push (msg);
 	}
 
 	void WindowsOSFramework::handleInputCommand (const InputCommand msg) {
-		m_pInputSubSystem->handleCommandMsg (msg);
+		m_inputCommandQueue.push (msg);
 	}
 
 	OSFramework* OSFramework::getInstance() {
