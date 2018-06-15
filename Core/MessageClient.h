@@ -64,6 +64,7 @@ namespace u92 {
 			void subscribe(int channelId);
 			void unsubscribe(int channelId);
 
+			virtual void threadInit ( ) = 0;
 		private:
 			void processMessages (const MessageStore& messages);
 

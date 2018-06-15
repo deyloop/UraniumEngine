@@ -4,8 +4,6 @@
 
 #include "MessageClient.h"
 #include "ErrorCode.h"
-#include "WindowEvent.h"
-#include "OSMessages.h"
 
 namespace u92 {
 
@@ -24,6 +22,8 @@ namespace u92 {
 			void		release ( );
 			
 			void run ( );
+
+			void threadInit ( ) { }
 
 		private:
 			bool			m_running;

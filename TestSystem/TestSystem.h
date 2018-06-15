@@ -11,6 +11,8 @@ class TestSystem : public System {
 public:
 	void init ( OSFramework* pOS );
 	void release ( );
+
+	void threadInit ( );
 private:
 	void handleWindowMessage (const WindowEvent event);
 	

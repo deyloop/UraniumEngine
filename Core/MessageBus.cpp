@@ -45,6 +45,9 @@ namespace u92 {
 
 		void MessageBus::registerClient (MessageClient& client) {
 			m_clients.push_back (&client);
+			for (int i = 0; i<std::thread::hardware_concurrency ( ); i++) {
+				m_pThreadPool->enqueue_theadSpecific (i,&MessageClient::threadInit,&client);
+			}
 		}
 
 		void MessageBus::unregisterClient (MessageClient& client) {

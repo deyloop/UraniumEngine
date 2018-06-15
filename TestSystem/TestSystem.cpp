@@ -1,6 +1,8 @@
 #include "TestSystem.h"
 #include <OSMessages.h>
+
 #include <Windows.h>
+
 void TestSystem::init (OSFramework* pOS ) {
 	m_pOS = pOS;
 	m_pOS->initSubSystem (SUBSYSTEM_OPENGL_GRAPHICS);
@@ -16,11 +18,14 @@ void TestSystem::init (OSFramework* pOS ) {
 
 	postMessage<WindowCommand> (cmd,10);
 
-	OutputDebugString ("init\n");
 }
 
 void TestSystem::release ( ) {
 
+}
+
+void TestSystem::threadInit ( ) {
+	OutputDebugString ("thread init\n");
 }
 
 void TestSystem::handleWindowMessage (const WindowEvent event) {

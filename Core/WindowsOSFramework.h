@@ -54,6 +54,8 @@ namespace u92 {
 		int getCmdShow ( ) { return m_cmdShow; }
 		System* loadSystemModule(const char* moduleName);
 
+		void threadInit ( ) { };
+
 	private:
 		WindowsOSFramework();
 
