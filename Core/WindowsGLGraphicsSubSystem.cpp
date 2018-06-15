@@ -46,9 +46,15 @@ namespace u92 {
 		case WM_CREATE:
 			event.event.type = WINDOWEVENTTYPE_CREATE;
 			return 0;
-		//case WM_PAINT:
+		case WM_PAINT: {
 			event.event.type = WINDOWEVENTTYPE_PAINT;
-			return 0; 
+			//it is compulsory to do this
+			//This 'validates the window'
+			//Else the OS will spam us with WM_PAINT forever.
+			PAINTSTRUCT ps;
+			HDC dc = BeginPaint (window,&ps);
+			EndPaint (window,&ps );
+		}return 0;
 		case WM_SIZE:
 			switch (wParam) {
 			case SIZE_MINIMIZED: {
