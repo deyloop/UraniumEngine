@@ -44,7 +44,7 @@ namespace u92{
 		virtual OSGLGraphicsSubSystem* getInputSubSystem()		= 0;
 		virtual OSInputSubSystem* getOpenGLGraphicsSubSystem()	= 0;
 
-		virtual System* loadSystemModule(char* moduleName)		= 0;
+		virtual System* loadSystemModule(const char* moduleName)		= 0;
 
 		static OSFramework* getInstance();
 	};

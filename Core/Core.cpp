@@ -3,6 +3,7 @@
 #include "OSFramework.h"
 #include "OSMessages.h"
 #include <cstring>
+#include "System.h"
 
 namespace u92 {
 	namespace core {
@@ -23,6 +24,9 @@ namespace u92 {
 			m_pOSFramework = OSFramework::getInstance ( );
 			m_pMessageBus->registerClient (*m_pOSFramework);
 
+			System* pTest = m_pOSFramework->loadSystemModule ("TestSystem.dll");
+			m_pMessageBus->registerClient (*pTest);
+			pTest->init ( m_pOSFramework );
 			return E_CODE_SUCCESS;
 		}
 
@@ -34,20 +38,6 @@ namespace u92 {
 		}
 
 		void Core::run ( ) {
-
-			m_pOSFramework->initSubSystem (SUBSYSTEM_OPENGL_GRAPHICS);
-			registerHandler<WindowEvent> (std::bind (&Core::ha,this,std::placeholders::_1));
-			subscribe (2);
-			//temporary code
-			WindowCommand cmd;
-			cmd.type = WINDOWCOMMAND_CREATEWINDOW;
-			strcpy_s(cmd.command.createWindow.title,"Kuchbhi");
-			cmd.command.createWindow.fullscreen = false;
-			cmd.command.createWindow.height = 500;
-			cmd.command.createWindow.width = 500;
-
-			postMessage<WindowCommand> (cmd,10);
-			//end temporary
 
 			m_running = true;
 			while (m_running) {

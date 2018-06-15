@@ -28,6 +28,9 @@
     <Filter Include="Source Files\OSFramework\Windows">
       <UniqueIdentifier>{ab330fff-a627-44c6-afd4-d000e3eebe0c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\OSFramework\Interfaces\Message Structures">
+      <UniqueIdentifier>{3c1e585d-c5b6-4199-9e9f-f309ca9c9c81}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source.cpp">
@@ -71,9 +74,6 @@
     <ClInclude Include="ErrorCode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="InputEvent.h">
-      <Filter>Header Files\OSFramework\Interfaces</Filter>
-    </ClInclude>
     <ClInclude Include="OSFramework.h">
       <Filter>Header Files\OSFramework\Interfaces</Filter>
     </ClInclude>
@@ -81,9 +81,6 @@
       <Filter>Header Files\OSFramework\Interfaces</Filter>
     </ClInclude>
     <ClInclude Include="OSInputSubSystem.h">
-      <Filter>Header Files\OSFramework\Interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="WindowEvent.h">
       <Filter>Header Files\OSFramework\Interfaces</Filter>
     </ClInclude>
     <ClInclude Include="WindowsGLGraphicsSubSystem.h">
@@ -95,8 +92,17 @@
     <ClInclude Include="WindowsOSFramework.h">
       <Filter>Header Files\OSFramework\Windows</Filter>
     </ClInclude>
+    <ClInclude Include="InputEvent.h">
+      <Filter>Header Files\OSFramework\Interfaces\Message Structures</Filter>
+    </ClInclude>
     <ClInclude Include="OSMessages.h">
-      <Filter>Header Files\OSFramework\Interfaces</Filter>
+      <Filter>Header Files\OSFramework\Interfaces\Message Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowEvent.h">
+      <Filter>Header Files\OSFramework\Interfaces\Message Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="System.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

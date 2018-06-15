@@ -23,18 +23,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "WindowsGLGraphicsSubSystem.h"
 #include "WindowsInputSubSystem.h"
-//#include "System.h"
+#include "System.h"
 
 namespace u92 {
 	WindowsOSFramework* WindowsOSFramework::m_pInstance = nullptr;
 
-	System * WindowsOSFramework::loadSystemModule(char * moduleName) {
+	System * WindowsOSFramework::loadSystemModule(const char * moduleName) {
 		HMODULE module = LoadLibrary(moduleName);
 		if (!module) return nullptr;
 		//get the load function.
 		System*(*getSystemInstance)(void) = (System*(*)())GetProcAddress(module, "getSystemInstance");
-		System* pSystem;
-		return nullptr;
+		System* pSystem = getSystemInstance ( );
+		return pSystem;
 	}
 
 	WindowsOSFramework::WindowsOSFramework(){

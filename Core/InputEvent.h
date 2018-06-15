@@ -1,5 +1,5 @@
 /******************************************************************************
-Project	:	NOK Engine - An engine for networked games and Simulations
+Project	:	Uranium Engine - An engine for networked games and Simulations
 
 Copyright (C) 2018  Anurup Dey
 

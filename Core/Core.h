@@ -26,16 +26,6 @@ namespace u92 {
 			void run ( );
 
 		private:
-			void ha (const WindowEvent e) {
-				if (e.event.type==WINDOWEVENTTYPE_CLOSE) {
-					WindowCommand cmd;
-					cmd.type = WINDOWCOMMAND_DESTROY;
-					postMessage<WindowCommand> (cmd,10);
-				} else if (e.event.type==WINDOWEVENTTYPE_DESTROY) {
-					QuitMessage msg = { 0 };
-					postMessage<QuitMessage> (msg,10);
-				}
-			}
 			bool			m_running;
 
 			MessageBus*		m_pMessageBus;

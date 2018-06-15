@@ -52,7 +52,7 @@ namespace u92 {
 		void setWindowHandle(HWND windowHandle) { m_windowHandle = windowHandle; };
 		WNDCLASSEX getWindowClass() { return m_windowClass; }
 		int getCmdShow ( ) { return m_cmdShow; }
-		System* loadSystemModule(char* moduleName);
+		System* loadSystemModule(const char* moduleName);
 
 	private:
 		WindowsOSFramework();
