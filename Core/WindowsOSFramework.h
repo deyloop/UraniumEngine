@@ -35,7 +35,7 @@ namespace u92 {
 	public:
 		~WindowsOSFramework();
 
-		int init(HINSTANCE instance);
+		int init(HINSTANCE instance, int cmdShow);
 		void release();
 
 		int initSubSystem	 (SubSystemType subSystemType);
@@ -46,19 +46,20 @@ namespace u92 {
 
 		int handleOSMessages();
 
-		void handleWindowCommand(const WindowCommand msg);
-		void handleInputCommand (const InputCommand msg);
-
 		static WindowsOSFramework* getWindowsInstance();
 
 		HWND getWindowHandle() { return m_windowHandle; };
 		void setWindowHandle(HWND windowHandle) { m_windowHandle = windowHandle; };
 		WNDCLASSEX getWindowClass() { return m_windowClass; }
-
+		int getCmdShow ( ) { return m_cmdShow; }
 		System* loadSystemModule(char* moduleName);
 
 	private:
 		WindowsOSFramework();
+
+		void handleWindowCommand (const WindowCommand msg);
+		void handleInputCommand (const InputCommand msg);
+		void handleQuitMessage (const QuitMessage msg);
 
 		static LRESULT CALLBACK staticWinProc(	HWND window,	UINT message,
 												WPARAM wParam,	LPARAM lParam);
@@ -71,9 +72,15 @@ namespace u92 {
 
 		HWND m_windowHandle;
 		WNDCLASSEX m_windowClass;
+		int m_cmdShow;
 
 		std::queue<InputCommand> m_inputCommandQueue;
 		std::queue<WindowCommand> m_windowCommandQueue;
+		
+		struct {
+			bool posted;
+			int exitCode;
+		} m_quit;
 	}; 
 }
 

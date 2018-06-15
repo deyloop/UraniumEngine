@@ -46,7 +46,7 @@ namespace u92 {
 		case WM_CREATE:
 			event.event.type = WINDOWEVENTTYPE_CREATE;
 			return 0;
-		case WM_PAINT:
+		//case WM_PAINT:
 			event.event.type = WINDOWEVENTTYPE_PAINT;
 			return 0; 
 		case WM_SIZE:
@@ -90,21 +90,26 @@ namespace u92 {
 				break;
 			}
 			case WINDOWCOMMAND_CREATEWINDOW: {
-				HWND window = CreateWindow (WindowsOSFramework::getWindowsInstance ( )->getWindowClass ( ).lpszClassName,
+				HWND window = CreateWindow (
+											WindowsOSFramework::getWindowsInstance ( )->getWindowClass ( ).lpszClassName,
 											&msg.command.createWindow.title[0],
-											WS_OVERLAPPEDWINDOW|WS_VISIBLE,
-											CW_DEFAULT,CW_DEFAULT,
+											WS_OVERLAPPEDWINDOW,
+											CW_USEDEFAULT,CW_USEDEFAULT,
 											msg.command.createWindow.width,
 											msg.command.createWindow.height,
-											NULL,NULL,GetModuleHandle (NULL),
+											NULL,NULL,
+											GetModuleHandle (0),
 											NULL
 										   );
+				ShowWindow (window,WindowsOSFramework::getWindowsInstance ( )->getCmdShow ( ));
 				UpdateWindow (window);
-				ShowWindow (window,3);
-
+				
 				WindowsOSFramework::getWindowsInstance ( )->setWindowHandle (window);
 			} break;
-			
+			case WINDOWCOMMAND_DESTROY: {
+				DestroyWindow (WindowsOSFramework::getWindowsInstance ( )->getWindowHandle ( ));
+				WindowsOSFramework::getWindowsInstance ( )->setWindowHandle (NULL);
+			} break;
 			default: {
 				break;
 			}

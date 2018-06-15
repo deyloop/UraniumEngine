@@ -5,7 +5,8 @@ namespace u92 {
 
 	enum WindowCommandType {
 		WINDOWCOMMAND_NONE = 0,
-		WINDOWCOMMAND_CREATEWINDOW
+		WINDOWCOMMAND_CREATEWINDOW,
+		WINDOWCOMMAND_DESTROY
 	};
 
 	struct CreateWindowCommand {
@@ -25,6 +26,10 @@ namespace u92 {
 
 	struct InputCommand {
 
+	};
+
+	struct QuitMessage {
+		int exitCode;
 	};
 }
 

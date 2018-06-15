@@ -29,7 +29,7 @@ int WINAPI WinMain (HINSTANCE instance,HINSTANCE prevInstance,
 	if (!pOSFramework||!pCore) return 1;
 
 	int result;
-	result = pOSFramework->init (instance);
+	result = pOSFramework->init (instance, cmdShow);
 	if (result!=E_CODE_SUCCESS) {
 		if (result==E_CODE_REGISTERCLASSFAILED) {
 			MessageBox (NULL,"Registration of Window Class failed","Fatal Error",NULL);

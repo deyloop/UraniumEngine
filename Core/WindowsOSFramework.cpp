@@ -48,9 +48,9 @@ namespace u92 {
 		release();
 	}
 
-	int WindowsOSFramework::init(HINSTANCE instance){
+	int WindowsOSFramework::init(HINSTANCE instance,int cmdShow){
 		m_windowClass.cbSize		= sizeof(WNDCLASSEX);
-		m_windowClass.style			= CS_DBLCLKS | CS_OWNDC | CS_HREDRAW | CS_VREDRAW;
+		m_windowClass.style			= CS_OWNDC | CS_HREDRAW | CS_VREDRAW;
 		m_windowClass.lpfnWndProc	= (WNDPROC)WindowsOSFramework::staticWinProc;
 		m_windowClass.cbClsExtra	= 0;
 		m_windowClass.cbWndExtra	= 0;
@@ -70,7 +70,13 @@ namespace u92 {
 		//register the message handlers
 		registerHandler<WindowCommand> (std::bind (&WindowsOSFramework::handleWindowCommand,this,std::placeholders::_1));
 		registerHandler<InputCommand> (std::bind (&WindowsOSFramework::handleInputCommand,this,std::placeholders::_1));
+		registerHandler<QuitMessage> (std::bind (&WindowsOSFramework::handleQuitMessage,this,std::placeholders::_1));
+
 		subscribe (10);
+
+		m_cmdShow = cmdShow;
+		
+		m_quit.posted = false;
 
 		return E_CODE_SUCCESS;
 	}
@@ -151,17 +157,23 @@ namespace u92 {
 		//process them from here.
 		
 		//Window command check
-		while (!m_inputCommandQueue.empty ( )) {
+		while (m_pInputSubSystem&&!m_inputCommandQueue.empty ( )) {
 			m_pInputSubSystem->handleCommandMsg (m_inputCommandQueue.front ( ));
 			m_inputCommandQueue.pop ( );
 		}
 
-		while (!m_windowCommandQueue.empty()) {
+		while (m_pGraphicsSubsystem&&!m_windowCommandQueue.empty()) {
 			m_pGraphicsSubsystem->handleCommandMsg(m_windowCommandQueue.front ( ));
 			m_windowCommandQueue.pop ( );
 		}
-			MSG msg;
-		while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
+		
+		if (m_quit.posted) {
+			PostQuitMessage (m_quit.exitCode);
+		}
+
+		MSG msg;
+		int nummsg = 0;
+		while (PeekMessage(&msg, m_windowHandle, 0, 0, PM_REMOVE) > 0) {
 			if (msg.message == WM_QUIT) {
 				//return and error, so core will stop.
 				ret = E_CODE_QUIT_MESSAGE;
@@ -169,7 +181,10 @@ namespace u92 {
 			}
 			TranslateMessage(&msg);
 			DispatchMessage	(&msg);
+			nummsg++;
+			//OutputDebugString ("msg\n");
 		}
+		//OutputDebugString ("frame\n");
 		return ret;
 	}
 
@@ -179,6 +194,11 @@ namespace u92 {
 
 	void WindowsOSFramework::handleInputCommand (const InputCommand msg) {
 		m_inputCommandQueue.push (msg);
+	}
+
+	void WindowsOSFramework::handleQuitMessage (const QuitMessage msg) {
+		m_quit.exitCode = msg.exitCode;
+		m_quit.posted = true;
 	}
 
 	OSFramework* OSFramework::getInstance() {

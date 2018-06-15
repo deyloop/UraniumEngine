@@ -35,8 +35,9 @@ namespace u92 {
 
 		void Core::run ( ) {
 
-			m_pOSFramework->initSubSystem (SUBSYSTEM_ALL);
-
+			m_pOSFramework->initSubSystem (SUBSYSTEM_OPENGL_GRAPHICS);
+			registerHandler<WindowEvent> (std::bind (&Core::ha,this,std::placeholders::_1));
+			subscribe (2);
 			//temporary code
 			WindowCommand cmd;
 			cmd.type = WINDOWCOMMAND_CREATEWINDOW;
