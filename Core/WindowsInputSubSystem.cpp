@@ -51,14 +51,14 @@ namespace u92 {
 		POINTS ptCursor;
 		static POINTS ptPrevCursor;
 		//send out keydpress messages first.
-		for (unsigned i = 0; i<256; ++i) {
+		/*for (unsigned i = 0; i<256; ++i) {
 			if (m_keyPressed[i]&&m_keyPosted[i]!=m_currentKeySync) {
 				event.key.type = EVENT_KEYPRESS;
 				event.key.keycode = (Key)i;
 				event.key.timestamp = GetTickCount64 ( );
 				return 0;
 			}
-		}
+		}*/
 
 		event.event.timestamp = GetTickCount64 ( );
 		switch (message) {
@@ -128,16 +128,17 @@ namespace u92 {
 							 //extract keyboard input data
 				RAWINPUT* raw = reinterpret_cast<RAWINPUT*>(buffer);
 				if (raw->header.dwType==RIM_TYPEKEYBOARD) {
-					if (EvaluateKeyBaordInput (raw->data.keyboard,&event)>0) {
+					if (EvaluateKeyBaordInput (raw->data.keyboard,&event)>=0) {
 						if (event.event.type==EVENT_KEYDOWN) {
-							if (m_keyPressed[event.key.keycode])
+							/*if (m_keyPressed[event.key.keycode])
 								return -1; //ignoring the event.
 							else {
-								m_keyPressed[event.key.keycode] = true;
+								//m_keyPressed[event.key.keycode] = true;
 							}
 						} else if (event.event.type==EVENT_KEYUP) {
-							m_keyPressed[event.key.keycode] = false;
+							//m_keyPressed[event.key.keycode] = false;
 
+						}*/
 						}
 						return 0;
 					}

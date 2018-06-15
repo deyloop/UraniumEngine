@@ -25,8 +25,13 @@ namespace u92 {
 			m_pMessageBus->registerClient (*m_pOSFramework);
 
 			System* pTest = m_pOSFramework->loadSystemModule ("TestSystem.dll");
+			pTest->init (m_pOSFramework);
 			m_pMessageBus->registerClient (*pTest);
-			pTest->init ( m_pOSFramework );
+			
+			System* pInputSystem = m_pOSFramework->loadSystemModule ("InputSystem.dll");
+			pInputSystem->init (m_pOSFramework);
+			m_pMessageBus->registerClient (*pInputSystem);
+
 			return E_CODE_SUCCESS;
 		}
 
