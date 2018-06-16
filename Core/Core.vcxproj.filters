@@ -57,6 +57,9 @@
     <ClCompile Include="WindowsOSFramework.cpp">
       <Filter>Source Files\OSFramework\Windows</Filter>
     </ClCompile>
+    <ClCompile Include="GLExtensions.cpp">
+      <Filter>Header Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ThreadPool.h">
@@ -103,6 +106,12 @@
     </ClInclude>
     <ClInclude Include="System.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenGL.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TickMessage.h">
+      <Filter>Header Files\OSFramework\Interfaces\Message Structures</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

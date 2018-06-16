@@ -39,8 +39,15 @@ namespace u92 {
 		int handleCommandMsg(const WindowCommand msg);
 
 		void createWindow (const char* title,int width,int hieght,bool fullscreen = false);
-	private:
+		bool initOpenGLContext (int versionMajor,int versionMinor);
+		void swapBuffers ( );
 
+		void clear ( );
+	private:
+		bool initGLExtentions ( );
+
+		HDC m_deviceContext;
+		HGLRC m_GLContext;
 	};
 }
 

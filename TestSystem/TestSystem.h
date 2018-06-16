@@ -4,6 +4,7 @@
 
 #include <System.h>
 #include <WindowEvent.h>
+#include <TickMessage.h>
 
 using namespace u92;
 
@@ -15,7 +16,8 @@ public:
 	void threadInit ( );
 private:
 	void handleWindowMessage (const WindowEvent event);
-	
+	void render (const TickMessage msg);
+
 	OSFramework* m_pOS;
 };
 

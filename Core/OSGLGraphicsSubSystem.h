@@ -28,6 +28,10 @@ namespace u92 {
 	class OSGLGraphicsSubSystem {
 	public:
 		virtual void createWindow (const char* title,int width,int hieght,bool fullscreen = false) = 0;
+		virtual bool initOpenGLContext (int versionMajor,int versionMinor) = 0;
+		virtual void swapBuffers ( ) = 0;
+
+		virtual void clear ( ) = 0;
 	};
 }
 

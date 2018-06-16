@@ -4,6 +4,7 @@
 #include "OSMessages.h"
 #include <cstring>
 #include "System.h"
+#include "TickMessage.h"
 
 namespace u92 {
 	namespace core {
@@ -45,7 +46,9 @@ namespace u92 {
 		void Core::run ( ) {
 
 			m_running = true;
+			unsigned long long int tick = 0;
 			while (m_running) {
+				postMessage<TickMessage> ({ tick },0);
 				int result = m_pOSFramework->handleOSMessages ( );
 				if (result==E_CODE_QUIT_MESSAGE) {
 					m_running = false;
@@ -53,6 +56,8 @@ namespace u92 {
 				}
 				m_pMessageBus->syncMessages ( );
 				m_pMessageBus->proccessMessages ( );
+				
+				tick++;
 			}
 		}
 
