@@ -38,15 +38,34 @@ namespace u92 {
 		void MessageBus::proccessMessages ( ) {
 			std::vector<std::future<void>> futures;
 			for (auto& client:m_clients) {
-				futures.emplace_back (m_pThreadPool->enqueue (&MessageBus::processClient,this,client));
+				if (client->m_threadAffinity&&client->m_threadAffinityID!=-1) {
+					futures.emplace_back (m_pThreadPool->enqueue_theadSpecific (client->m_threadAffinityID,
+																				&MessageBus::processClient,
+																				this,
+																				client)
+					);
+				} else {
+					futures.emplace_back (m_pThreadPool->enqueue (&MessageBus::processClient,this,client));
+
+				}
 			}
+
 			for (auto& future:futures) future.wait ( );
 		}
 
 		void MessageBus::registerClient (MessageClient& client) {
 			m_clients.push_back (&client);
-			for (int i = 0; i<std::thread::hardware_concurrency ( ); i++) {
-				m_pThreadPool->enqueue_theadSpecific (i,&MessageClient::threadInit,&client);
+			if (client.m_threadAffinity) {
+				static int affinThreadId = std::thread::hardware_concurrency ( )-1;
+				client.m_threadAffinityID = affinThreadId;
+				m_pThreadPool->enqueue_theadSpecific (client.m_threadAffinityID,&MessageClient::threadInit,&client);
+				if (affinThreadId==0) {
+					affinThreadId = std::thread::hardware_concurrency ( )-1;
+				} else affinThreadId--;
+			} else {
+				for (int i = 0; i<std::thread::hardware_concurrency ( ); i++) {
+					m_pThreadPool->enqueue_theadSpecific (i,&MessageClient::threadInit,&client);
+				}
 			}
 		}
 

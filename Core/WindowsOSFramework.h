@@ -41,8 +41,8 @@ namespace u92 {
 		int initSubSystem	 (SubSystemType subSystemType);
 		int releaseSubSystem (SubSystemType subsystemType);
 
-		OSGLGraphicsSubSystem*	getInputSubSystem();
-		OSInputSubSystem*		getOpenGLGraphicsSubSystem();
+		OSGLGraphicsSubSystem*	getOpenGLGraphicsSubSystem ( );
+		OSInputSubSystem*		getInputSubSystem ( );
 
 		int handleOSMessages();
 

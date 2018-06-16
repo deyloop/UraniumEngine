@@ -27,7 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 namespace u92 {
 	class OSGLGraphicsSubSystem {
 	public:
-
+		virtual void createWindow (const char* title,int width,int hieght,bool fullscreen = false) = 0;
 	};
 }
 

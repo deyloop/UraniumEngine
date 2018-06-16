@@ -141,11 +141,11 @@ namespace u92 {
 		return ret;
 	}
 
-	OSGLGraphicsSubSystem * WindowsOSFramework::getInputSubSystem() {
+	OSGLGraphicsSubSystem * WindowsOSFramework::getOpenGLGraphicsSubSystem ( ) {
 		return m_pGraphicsSubsystem;
 	}
 
-	OSInputSubSystem * WindowsOSFramework::getOpenGLGraphicsSubSystem()
+	OSInputSubSystem * WindowsOSFramework::getInputSubSystem ( )
 	{
 		return m_pInputSubSystem;
 	}

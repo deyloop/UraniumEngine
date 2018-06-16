@@ -38,7 +38,7 @@ namespace u92 {
 		int convertMessage(HWND window, UINT message, WPARAM wParam, LPARAM lParam, WindowEvent& event);
 		int handleCommandMsg(const WindowCommand msg);
 
-
+		void createWindow (const char* title,int width,int hieght,bool fullscreen = false);
 	private:
 
 	};

@@ -41,8 +41,8 @@ namespace u92{
 		virtual int initSubSystem	 (SubSystemType subSystemType) = 0;
 		virtual int releaseSubSystem (SubSystemType subSystemType) = 0;
 
-		virtual OSGLGraphicsSubSystem* getInputSubSystem()		= 0;
-		virtual OSInputSubSystem* getOpenGLGraphicsSubSystem()	= 0;
+		virtual OSGLGraphicsSubSystem*	getOpenGLGraphicsSubSystem ( ) = 0;
+		virtual OSInputSubSystem*  getInputSubSystem ( )	= 0;
 
 		virtual System* loadSystemModule(const char* moduleName)		= 0;
 

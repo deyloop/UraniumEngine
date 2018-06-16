@@ -2,6 +2,7 @@
 #include <OSMessages.h>
 
 #include <Windows.h>
+#include <OSGLGraphicsSubSystem.h>
 
 void TestSystem::init (OSFramework* pOS ) {
 	m_pOS = pOS;
@@ -9,15 +10,9 @@ void TestSystem::init (OSFramework* pOS ) {
 	registerHandler<WindowEvent> (std::bind (&TestSystem::handleWindowMessage,this,std::placeholders::_1));
 	subscribe (2);
 
-	WindowCommand cmd;
-	cmd.type = WINDOWCOMMAND_CREATEWINDOW;
-	strcpy_s (cmd.command.createWindow.title,"Kuchbhi");
-	cmd.command.createWindow.fullscreen = false;
-	cmd.command.createWindow.height = 500;
-	cmd.command.createWindow.width  = 500;
+	(pOS->getOpenGLGraphicsSubSystem())->createWindow("kuchbhi",500,500);
 
-	postMessage<WindowCommand> (cmd,10);
-
+	setthreadAfinity (true);
 }
 
 void TestSystem::release ( ) {

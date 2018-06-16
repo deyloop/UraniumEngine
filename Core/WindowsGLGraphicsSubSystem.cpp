@@ -96,21 +96,10 @@ namespace u92 {
 				break;
 			}
 			case WINDOWCOMMAND_CREATEWINDOW: {
-				HWND window = CreateWindow (
-											WindowsOSFramework::getWindowsInstance ( )->getWindowClass ( ).lpszClassName,
-											&msg.command.createWindow.title[0],
-											WS_OVERLAPPEDWINDOW,
-											CW_USEDEFAULT,CW_USEDEFAULT,
-											msg.command.createWindow.width,
-											msg.command.createWindow.height,
-											NULL,NULL,
-											GetModuleHandle (0),
-											NULL
-										   );
-				ShowWindow (window,WindowsOSFramework::getWindowsInstance ( )->getCmdShow ( ));
-				UpdateWindow (window);
-				
-				WindowsOSFramework::getWindowsInstance ( )->setWindowHandle (window);
+				createWindow (msg.command.createWindow.title,
+							  msg.command.createWindow.width,
+							  msg.command.createWindow.width,
+							  msg.command.createWindow.fullscreen);
 			} break;
 			case WINDOWCOMMAND_DESTROY: {
 				DestroyWindow (WindowsOSFramework::getWindowsInstance ( )->getWindowHandle ( ));
@@ -121,5 +110,23 @@ namespace u92 {
 			}
 		}
 		return 0;
+	}
+
+	void WindowsGLGraphicsSubSystem::createWindow (const char * title,int width,int height,bool fullscreen) {
+		HWND window = CreateWindow (
+			WindowsOSFramework::getWindowsInstance ( )->getWindowClass ( ).lpszClassName,
+			title,
+			WS_OVERLAPPEDWINDOW,
+			CW_USEDEFAULT,CW_USEDEFAULT,
+			width,
+			height,
+			NULL,NULL,
+			GetModuleHandle (0),
+			NULL
+		);
+		ShowWindow (window,WindowsOSFramework::getWindowsInstance ( )->getCmdShow ( ));
+		UpdateWindow (window);
+
+		WindowsOSFramework::getWindowsInstance ( )->setWindowHandle (window);
 	}
 }

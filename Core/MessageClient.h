@@ -26,6 +26,11 @@ namespace u92 {
 		class MessageClient {
 			friend class MessageBus;
 		public:
+			MessageClient ( ) {
+				m_threadAffinity = false;
+				m_threadAffinityID = -1;
+			}
+
 		protected:
 			template <typename Message>
 			void postMessage(const Message message, int channelId = 0) {
@@ -65,12 +70,19 @@ namespace u92 {
 			void unsubscribe(int channelId);
 
 			virtual void threadInit ( ) = 0;
+			void setthreadAfinity (bool val) {
+				m_threadAffinity = val;
+			}
+
 		private:
 			void processMessages (const MessageStore& messages);
 
 			std::vector<ClientChannel>	m_chanels;
 			std::vector<int>			m_subscriptions;
 			std::map<size_t, std::function<void(const void*)>> m_handlers;
+
+			int m_threadAffinityID;
+			bool m_threadAffinity;
 		};
 	}
 }
