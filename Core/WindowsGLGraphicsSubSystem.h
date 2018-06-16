@@ -42,12 +42,13 @@ namespace u92 {
 		bool initOpenGLContext (int versionMajor,int versionMinor);
 		void swapBuffers ( );
 
-		void clear ( );
+		GL& getGLInterface ( ) { return gl; }
 	private:
 		bool initGLExtentions ( );
 
 		HDC m_deviceContext;
 		HGLRC m_GLContext;
+		GL gl;
 	};
 }
 

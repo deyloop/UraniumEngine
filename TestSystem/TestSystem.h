@@ -5,6 +5,7 @@
 #include <System.h>
 #include <WindowEvent.h>
 #include <TickMessage.h>
+#include <OpenGL.h>
 
 using namespace u92;
 
@@ -17,8 +18,14 @@ public:
 private:
 	void handleWindowMessage (const WindowEvent event);
 	void render (const TickMessage msg);
+	unsigned int loadShaders ( );
+	void initGeometry ( );
 
 	OSFramework* m_pOS;
+	GL* gl;
+
+	unsigned int program;
+	unsigned int VAO;
 };
 
 #ifdef URANIUM_EXPORTS

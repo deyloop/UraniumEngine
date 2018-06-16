@@ -10,28 +10,36 @@
 extern PFNWGLCHOOSEPIXELFORMATARBPROC wglChoosePixelFormatARB;
 extern PFNWGLCREATECONTEXTATTRIBSARBPROC wglCreateContextAttribsARB;
 
-extern PFNGLCREATESHADERPROC   glCreateShader;
-extern PFNGLCREATEPROGRAMPROC  glCreateProgram;
-extern PFNGLSHADERSOURCEPROC   glShaderSource;
-extern PFNGLCOMPILESHADERPROC  glCompileShader;
-extern PFNGLATTACHSHADERPROC   glAttachShader;
-extern PFNGLLINKPROGRAMPROC    glLinkProgram;
-extern PFNGLDELETESHADERPROC   glDeleteShader;
-extern PFNGLGETSHADERIVPROC    glGetShaderiv;
-extern PFNGLGETSHADERINFOLOGPROC glGetShaderInfoLog;
-extern PFNGLUSEPROGRAMPROC     glUseProgram;
+struct GL{
+	 PFNGLCREATESHADERPROC   CreateShader;
+	 PFNGLCREATEPROGRAMPROC  CreateProgram;
+	 PFNGLSHADERSOURCEPROC   ShaderSource;
+	 PFNGLCOMPILESHADERPROC  CompileShader;
+	 PFNGLATTACHSHADERPROC   AttachShader;
+	 PFNGLLINKPROGRAMPROC    LinkProgram;
+	 PFNGLDELETESHADERPROC   DeleteShader;
+	 PFNGLGETSHADERIVPROC    GetShaderiv;
+	 PFNGLGETSHADERINFOLOGPROC GetShaderInfoLog;
+	 PFNGLUSEPROGRAMPROC     UseProgram;
+	
+	 PFNGLGENVERTEXARRAYSPROC GenVertexArrays;
+	 PFNGLGENBUFFERSPROC      GenBuffers;
+	 PFNGLBINDVERTEXARRAYPROC BindVertexArray;
+	 PFNGLBINDBUFFERPROC      BindBuffer;
+	 PFNGLBUFFERDATAPROC      BufferData;
+	 PFNGLENABLEVERTEXATTRIBARRAYPROC EnableVertexAttribArray;
+	 PFNGLVERTEXATTRIBPOINTERPROC     VertexAttribPointer;
+	
+	 PFNGLGETUNIFORMLOCATIONPROC GetUniformLocation;
+	 PFNGLUNIFORMMATRIX4FVPROC   UniformMatrix4fv;
 
-extern PFNGLGENVERTEXARRAYSPROC glGenVertexArrays;
-extern PFNGLGENBUFFERSPROC      glGenBuffers;
-extern PFNGLBINDVERTEXARRAYPROC glBindVertexArray;
-extern PFNGLBINDBUFFERPROC      glBindBuffer;
-extern PFNGLBUFFERDATAPROC      glBufferData;
-extern PFNGLENABLEVERTEXATTRIBARRAYPROC glEnableVertexAttribArray;
-extern PFNGLVERTEXATTRIBPOINTERPROC     glVertexAttribPointer;
-
-extern PFNGLGETUNIFORMLOCATIONPROC glGetUniformLocation;
-extern PFNGLUNIFORMMATRIX4FVPROC   glUniformMatrix4fv;
-
-bool LoadGLExtensions();
+	 void (__stdcall *ClearColor)(GLclampf r,GLclampf g,GLclampf b,GLclampf a);
+	 void (__stdcall *Clear)(GLbitfield mask);
+	 void (__stdcall *ClearDepth)(GLclampd depth);
+	 void (__stdcall *Enable)(GLenum cap);
+	 void (__stdcall *FrontFace)(GLenum mode);
+	 void (__stdcall *DrawArrays)(GLenum mode, GLint first, GLsizei count);
+};
+bool LoadGLExtensions(GL& gl);
 bool LoadWGLExtensions();
 #endif

@@ -194,16 +194,12 @@ namespace u92 {
 		}
 
 		//Load all the opengl functions on this context now.
-		if (!LoadGLExtensions ( )) return false;
+		if (!LoadGLExtensions (gl)) return false;
 
 		return true;
 	}
 	void WindowsGLGraphicsSubSystem::swapBuffers ( ) {
 		SwapBuffers (m_deviceContext);
-	}
-	void WindowsGLGraphicsSubSystem::clear ( ) {
-		glClearColor (1,1,0,1);
-		glClear (GL_COLOR_BUFFER_BIT);
 	}
 	bool WindowsGLGraphicsSubSystem::initGLExtentions ( ) {
 		//To Initialize glew, we need a fake OpenGL Context.

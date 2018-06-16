@@ -23,6 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define _OS_GL_GRAPHICS_SUBSYSTEM_H_
 
 #include "WindowEvent.h"
+#include "OpenGL.h"
 
 namespace u92 {
 	class OSGLGraphicsSubSystem {
@@ -31,7 +32,7 @@ namespace u92 {
 		virtual bool initOpenGLContext (int versionMajor,int versionMinor) = 0;
 		virtual void swapBuffers ( ) = 0;
 
-		virtual void clear ( ) = 0;
+		virtual GL& getGLInterface ( ) = 0;
 	};
 }
 

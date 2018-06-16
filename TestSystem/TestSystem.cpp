@@ -3,7 +3,31 @@
 
 #include <Windows.h>
 #include <OSGLGraphicsSubSystem.h>
-//#include <OpenGL.h>
+
+#include <glm/glm/glm.hpp>
+#include <glm/glm/gtx/transform.hpp>
+
+const char* vertexshadercode[] = {
+	"#version 410\n",
+	"uniform mat4 world;\n",
+	"in vec3 inPos;\n",
+	"in vec3 inColor;\n",
+
+	"smooth out vec3 outColor;\n",
+	"void main(){\n",
+	"	gl_Position = vec4(inPos,1.0f)*world;\n",
+	"	outColor = inColor;\n",
+	"}\n"
+};
+
+const char* fragmentshadercode[] = {
+	"#version 410\n",
+	"in vec3 outColor;\n",
+	"out vec4 color;\n",
+	"void main(){\n",
+	"	color = vec4(outColor,1.0f);\n",
+	"}\n"
+};
 
 void TestSystem::init (OSFramework* pOS ) {
 	m_pOS = pOS;
@@ -24,9 +48,20 @@ void TestSystem::release ( ) {
 
 void TestSystem::threadInit ( ) {
 	OutputDebugString ("thread init\n");
-	m_pOS->getOpenGLGraphicsSubSystem ( )->initOpenGLContext (3,2);
-	m_pOS->getOpenGLGraphicsSubSystem ( )->clear ( );
-	m_pOS->getOpenGLGraphicsSubSystem ( )->swapBuffers ( );
+	m_pOS->getOpenGLGraphicsSubSystem ( )->initOpenGLContext (4,1);
+	gl = &m_pOS->getOpenGLGraphicsSubSystem ( )->getGLInterface ( );
+	
+	gl->ClearColor (1.0f,1.0f,1.0f,1.0f);
+	gl->ClearDepth (1.0);
+	gl->Enable (GL_DEPTH_TEST);
+	gl->Enable (GL_CULL_FACE);
+	gl->FrontFace (GL_CW);
+
+	program = loadShaders ( );
+	initGeometry ( );
+
+	gl->UseProgram (program);
+	//m_pOS->getOpenGLGraphicsSubSystem ( )->swapBuffers ( );
 }
 
 void TestSystem::handleWindowMessage (const WindowEvent event) {
@@ -44,8 +79,122 @@ void TestSystem::handleWindowMessage (const WindowEvent event) {
 }
 
 void TestSystem::render (const TickMessage msg) {
-	m_pOS->getOpenGLGraphicsSubSystem ( )->clear ( );
+	//Render the frame.
+	gl->Clear (GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
+
+	glm::mat4 proj = glm::perspective (45.0f,1.0f,0.25f,100.0f);
+	proj *= glm::lookAt (glm::vec3 (0,0,9),glm::vec3 (0,0,0),glm::vec3 (0,1,0));
+
+	glm::mat4 world = glm::mat4 (1);
+	world = glm::rotate (world,(float)msg.tick_number/20.0f,glm::vec3 (1,0,0));
+	world = glm::rotate (world,(float)msg.tick_number/30.0f,glm::vec3 (0,1,0));
+	world *= proj;
+	GLint wpos = gl->GetUniformLocation (program,"world");
+	gl->UniformMatrix4fv (wpos,1,false,&world[0][0]);
+
+	gl->DrawArrays (GL_TRIANGLES,0,3*2*6);
+
 	m_pOS->getOpenGLGraphicsSubSystem ( )->swapBuffers ( );
+}
+
+unsigned int TestSystem::loadShaders ( ) {
+	unsigned int vshader,fshader,program;
+	vshader = gl->CreateShader (GL_VERTEX_SHADER);
+	fshader = gl->CreateShader (GL_FRAGMENT_SHADER);
+	program = gl->CreateProgram ( );
+
+	gl->ShaderSource ((GLuint)vshader,9,vertexshadercode,NULL);
+	gl->ShaderSource ((GLuint)fshader,6,fragmentshadercode,NULL);
+
+	gl->CompileShader (vshader);
+	int iCompilationStatus;
+	gl->GetShaderiv (vshader,GL_COMPILE_STATUS,&iCompilationStatus);
+
+	if (iCompilationStatus==GL_FALSE) {
+		GLsizei len;
+		gl->GetShaderiv (vshader,GL_INFO_LOG_LENGTH,&len);
+
+		GLchar* log = new GLchar[len+1];
+		gl->GetShaderInfoLog (vshader,len,&len,log);
+		MessageBox (NULL,log,"Shader could not compile.",NULL);
+		delete[] log;
+		//TODO: Do I need to Delete the shader?
+	}
+	gl->CompileShader (fshader);
+	gl->GetShaderiv (fshader,GL_COMPILE_STATUS,&iCompilationStatus);
+
+	if (iCompilationStatus==GL_FALSE) {
+		GLsizei len;
+		gl->GetShaderiv (fshader,GL_INFO_LOG_LENGTH,&len);
+
+		GLchar* log = new GLchar[len+1];
+		gl->GetShaderInfoLog (fshader,len,&len,log);
+		MessageBox (NULL,log,"Shader could not compile.",NULL);
+		delete[] log;
+		//TODO: Do I need to Delete the shader?
+	}
+	gl->AttachShader (program,vshader);
+	gl->AttachShader (program,fshader);
+	gl->LinkProgram (program);
+
+	gl->DeleteShader (fshader);
+	gl->DeleteShader (vshader);
+
+	return program;
+}
+
+void TestSystem::initGeometry ( ) {
+	unsigned int VBO[2];
+
+	float cube[] = {
+		-0.5f,-0.5f, 0.5f,  0.5f,-0.5f, 0.5f,  0.5f, 0.5f, 0.5f,
+		-0.5f,-0.5f, 0.5f,  0.5f, 0.5f, 0.5f, -0.5f, 0.5f, 0.5f,
+		-0.5f,-0.5f,-0.5f, -0.5f,-0.5f, 0.5f, -0.5f, 0.5f, 0.5f,
+		-0.5f,-0.5f,-0.5f, -0.5f, 0.5f, 0.5f, -0.5f, 0.5f,-0.5f,
+		-0.5f,-0.5f,-0.5f, -0.5f, 0.5f,-0.5f,  0.5f, 0.5f,-0.5f,
+		-0.5f,-0.5f,-0.5f,  0.5f, 0.5f,-0.5f,  0.5f,-0.5f,-0.5f,
+		0.5f,-0.5f,-0.5f,  0.5f, 0.5f,-0.5f,  0.5f,-0.5f, 0.5f,
+		0.5f,-0.5f, 0.5f,  0.5f, 0.5f,-0.5f,  0.5f, 0.5f, 0.5f,
+		-0.5f, 0.5f, 0.5f,  0.5f, 0.5f, 0.5f, -0.5f, 0.5f,-0.5f,
+		-0.5f, 0.5f,-0.5f,  0.5f, 0.5f, 0.5f,  0.5f, 0.5f,-0.5f,
+		-0.5f,-0.5f,-0.5f,  0.5f,-0.5f, 0.5f, -0.5f,-0.5f, 0.5f,
+		0.5f,-0.5f, 0.5f, -0.5f,-0.5f,-0.5f,  0.5f,-0.5f,-0.5f
+	};
+
+	float colorscube[] = {
+		1.0f,0.0f,0.0f, 1.0f,0.0f,0.0f, 1.0f,0.0f,0.0f,
+		1.0f,0.0f,0.0f, 1.0f,0.0f,0.0f, 1.0f,0.0f,0.0f,
+
+		0.0f,1.0f,0.0f, 0.0f,1.0f,0.0f, 0.0f,1.0f,0.0f,
+		0.0f,1.0f,0.0f, 0.0f,1.0f,0.0f, 0.0f,1.0f,0.0f,
+
+		0.0f,0.0f,1.0f, 0.0f,0.0f,1.0f, 0.0f,0.0f,1.0f,
+		0.0f,0.0f,1.0f, 0.0f,0.0f,1.0f, 0.0f,0.0f,1.0f,
+
+		1.0f,1.0f,0.0f, 1.0f,1.0f,0.0f, 1.0f,1.0f,0.0f,
+		1.0f,1.0f,0.0f, 1.0f,1.0f,0.0f, 1.0f,1.0f,0.0f,
+
+		0.0f,1.0f,1.0f, 0.0f,1.0f,1.0f, 0.0f,1.0f,1.0f,
+		0.0f,1.0f,1.0f, 0.0f,1.0f,1.0f, 0.0f,1.0f,1.0f,
+
+		1.0f,0.0f,1.0f, 1.0f,0.0f,1.0f, 1.0f,0.0f,1.0f,
+		1.0f,0.0f,1.0f, 1.0f,0.0f,1.0f, 1.0f,0.0f,1.0f
+	};
+
+	gl->GenVertexArrays (1,&VAO);
+	gl->GenBuffers (2,VBO);
+
+	gl->BindVertexArray (VAO);
+
+	gl->BindBuffer (GL_ARRAY_BUFFER,VBO[0]);
+	gl->BufferData (GL_ARRAY_BUFFER,108*sizeof (float),&cube[0],GL_STATIC_DRAW);
+	gl->EnableVertexAttribArray (0);
+	gl->VertexAttribPointer (0,3,GL_FLOAT,GL_FALSE,0,0);
+
+	gl->BindBuffer (GL_ARRAY_BUFFER,VBO[1]);
+	gl->BufferData (GL_ARRAY_BUFFER,108*sizeof (float),&colorscube[0],GL_STATIC_DRAW);
+	gl->EnableVertexAttribArray (1);
+	gl->VertexAttribPointer (1,3,GL_FLOAT,GL_FALSE,0,0);
 }
 
 System * getSystemInstance ( ) {
