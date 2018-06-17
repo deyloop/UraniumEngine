@@ -91,6 +91,7 @@ void TestSystem::handleWindowMessage (const WindowEvent event) {
 		}
 	}
 }
+
 #include <chrono>
 #include <sstream>
 
@@ -133,7 +134,7 @@ void TestSystem::render (const TickMessage msg) {
 	prev = now;
 	std::stringstream stream;
 	stream<<"Framerate: "<<1.0/frame.count ( ) <<"s \n";
-	//OutputDebugString (stream.str().c_str());
+	OutputDebugString (stream.str().c_str());
 }
 
 void TestSystem::input (const UserInputEvent event) {

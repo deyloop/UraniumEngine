@@ -150,7 +150,7 @@ namespace u92 {
 		if (virtualKey==255) {
 			//discard 'fake keys' which are part of an 
 			//escape sequence
-			return 0;
+			return -1;
 		} else if (virtualKey==VK_SHIFT) {
 			//correct left hand/right hand shift.
 			virtualKey = MapVirtualKey (scanCode,MAPVK_VSC_TO_VK_EX);
