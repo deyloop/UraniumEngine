@@ -39,6 +39,7 @@ struct GL{
 	 void (__stdcall *Enable)(GLenum cap);
 	 void (__stdcall *FrontFace)(GLenum mode);
 	 void (__stdcall *DrawArrays)(GLenum mode, GLint first, GLsizei count);
+	 void (__stdcall *Viewport)(GLint x, GLint y, GLsizei width, GLsizei height);
 };
 bool LoadGLExtensions(GL& gl);
 bool LoadWGLExtensions();

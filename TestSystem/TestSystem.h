@@ -6,11 +6,14 @@
 #include <WindowEvent.h>
 #include <TickMessage.h>
 #include <OpenGL.h>
+#include "Camera.h"
 
 using namespace u92;
 
 class TestSystem : public System {
 public:
+	TestSystem ( );
+
 	void init ( OSFramework* pOS );
 	void release ( );
 
@@ -26,6 +29,8 @@ private:
 
 	unsigned int program;
 	unsigned int VAO;
+
+	Camera m_cam;
 };
 
 #ifdef URANIUM_EXPORTS

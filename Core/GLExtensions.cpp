@@ -31,6 +31,7 @@ bool LoadGLExtensions(GL& gl) {
 		gl.Enable		= &glEnable;
 		gl.FrontFace	= &glFrontFace;
 		gl.DrawArrays	= &glDrawArrays;
+		gl.Viewport		= &glViewport;
 
 		LoadGLExtentionGL(glCreateShader,		gl.CreateShader,        PFNGLCREATESHADERPROC);
 		LoadGLExtentionGL(glCreateProgram,		gl.CreateProgram,		PFNGLCREATEPROGRAMPROC);

@@ -15,7 +15,7 @@ const char* vertexshadercode[] = {
 
 	"smooth out vec3 outColor;\n",
 	"void main(){\n",
-	"	gl_Position = vec4(inPos,1.0f)*world;\n",
+	"	gl_Position = world*vec4(inPos,1.0f);\n",
 	"	outColor = inColor;\n",
 	"}\n"
 };
@@ -28,6 +28,10 @@ const char* fragmentshadercode[] = {
 	"	color = vec4(outColor,1.0f);\n",
 	"}\n"
 };
+
+TestSystem::TestSystem ( ) {
+	gl = nullptr;
+}
 
 void TestSystem::init (OSFramework* pOS ) {
 	m_pOS = pOS;
@@ -55,12 +59,13 @@ void TestSystem::threadInit ( ) {
 	gl->ClearDepth (1.0);
 	gl->Enable (GL_DEPTH_TEST);
 	gl->Enable (GL_CULL_FACE);
-	gl->FrontFace (GL_CW);
+	gl->FrontFace (GL_CCW);
 
 	program = loadShaders ( );
 	initGeometry ( );
 
 	gl->UseProgram (program);
+
 	//m_pOS->getOpenGLGraphicsSubSystem ( )->swapBuffers ( );
 }
 
@@ -75,26 +80,58 @@ void TestSystem::handleWindowMessage (const WindowEvent event) {
 			QuitMessage msg = { 0 };
 			postMessage<QuitMessage> (msg,10);
 		} break;
+		case WINDOWEVENTTYPE_RESIZE: {
+			if (gl) {
+				gl->Viewport (0,0,event.resize.newWidth,event.resize.newHieght);
+				float aspect = (float)event.resize.newWidth/event.resize.newHieght;
+				m_cam.SetAspectRatio (aspect);
+			}
+		}
 	}
 }
+#include <chrono>
+#include <sstream>
 
 void TestSystem::render (const TickMessage msg) {
 	//Render the frame.
+	static std::chrono::high_resolution_clock clock;
+	static auto now = clock.now ( );
+	static auto prev = clock.now ( );
+	
+	now = clock.now ( );
+	std::chrono::duration<double> frame = now-prev;
+	
+	m_cam.SetPos (0.0f,0.0f,sin (msg.tick_number/1000.0f)*5);
+
+	m_cam.Update ( );
+
 	gl->Clear (GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
 
-	glm::mat4 proj = glm::perspective (45.0f,1.0f,0.25f,100.0f);
-	proj *= glm::lookAt (glm::vec3 (0,0,9),glm::vec3 (0,0,0),glm::vec3 (0,1,0));
-
+	glm::mat4 proj = *m_cam.GetProjectionMatrix ( );
+	glm::mat4 view = *m_cam.GetViewMatrix ( );
 	glm::mat4 world = glm::mat4 (1);
 	world = glm::rotate (world,(float)msg.tick_number/20.0f,glm::vec3 (1,0,0));
 	world = glm::rotate (world,(float)msg.tick_number/30.0f,glm::vec3 (0,1,0));
-	world *= proj;
+	glm::mat4 WVP = proj*view*world;
+
 	GLint wpos = gl->GetUniformLocation (program,"world");
-	gl->UniformMatrix4fv (wpos,1,false,&world[0][0]);
+	gl->UniformMatrix4fv (wpos,1,false,&WVP[0][0]);
 
 	gl->DrawArrays (GL_TRIANGLES,0,3*2*6);
 
+	world = glm::mat4 (1);
+	world = glm::translate (world,glm::vec3 (2,1,0));
+	WVP = proj*view*world;
+
+	gl->UniformMatrix4fv (wpos,1,false,&WVP[0][0]);
+	gl->DrawArrays (GL_TRIANGLES,0,3*2*6);
+	
 	m_pOS->getOpenGLGraphicsSubSystem ( )->swapBuffers ( );
+	
+	prev = now;
+	std::stringstream stream;
+	stream<<"Framerate: "<<1.0/frame.count ( ) <<"s \n";
+	OutputDebugString (stream.str().c_str());
 }
 
 unsigned int TestSystem::loadShaders ( ) {
