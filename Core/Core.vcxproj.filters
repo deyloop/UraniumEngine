@@ -107,5 +107,8 @@
     <ClInclude Include="TickMessage.h">
       <Filter>Header Files\OSFramework\Interfaces\Message Structures</Filter>
     </ClInclude>
+    <ClInclude Include="UserInputEvent.h">
+      <Filter>Header Files\OSFramework\Interfaces\Message Structures</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

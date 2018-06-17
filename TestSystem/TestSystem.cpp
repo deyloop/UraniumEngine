@@ -38,8 +38,10 @@ void TestSystem::init (OSFramework* pOS ) {
 	m_pOS->initSubSystem (SUBSYSTEM_OPENGL_GRAPHICS);
 	registerHandler<WindowEvent> (std::bind (&TestSystem::handleWindowMessage,this,std::placeholders::_1));
 	registerHandler<TickMessage> (std::bind (&TestSystem::render,this,std::placeholders::_1));
+	registerHandler<UserInputEvent> (std::bind (&TestSystem::input,this,std::placeholders::_1));
 	subscribe (2);
 	subscribe (0);
+	subscribe (5);
 
 	(pOS->getOpenGLGraphicsSubSystem())->createWindow("kuchbhi",500,500);
 
@@ -55,7 +57,7 @@ void TestSystem::threadInit ( ) {
 	m_pOS->getOpenGLGraphicsSubSystem ( )->initOpenGLContext (4,1);
 	gl = &m_pOS->getOpenGLGraphicsSubSystem ( )->getGLInterface ( );
 	
-	gl->ClearColor (1.0f,1.0f,1.0f,1.0f);
+	gl->ClearColor (0.0f,0.0f,0.0f,1.0f);
 	gl->ClearDepth (1.0);
 	gl->Enable (GL_DEPTH_TEST);
 	gl->Enable (GL_CULL_FACE);
@@ -101,7 +103,7 @@ void TestSystem::render (const TickMessage msg) {
 	now = clock.now ( );
 	std::chrono::duration<double> frame = now-prev;
 	
-	m_cam.SetPos (0.0f,0.0f,sin (msg.tick_number/1000.0f)*5);
+	//m_cam.SetPos (0.0f,0.0f,sin (msg.tick_number/1000.0f)*5);
 
 	m_cam.Update ( );
 
@@ -131,7 +133,19 @@ void TestSystem::render (const TickMessage msg) {
 	prev = now;
 	std::stringstream stream;
 	stream<<"Framerate: "<<1.0/frame.count ( ) <<"s \n";
-	OutputDebugString (stream.str().c_str());
+	//OutputDebugString (stream.str().c_str());
+}
+
+void TestSystem::input (const UserInputEvent event) {
+	if (event.event=="move-forward") {
+		m_cam.SetPos (m_cam.GetPos ( )->x,m_cam.GetPos ( )->y,m_cam.GetPos ( )->z+0.1);
+	} else if (event.event=="move-back") {
+		m_cam.SetPos (m_cam.GetPos ( )->x,m_cam.GetPos ( )->y,m_cam.GetPos ( )->z-0.1);
+	} else if (event.event=="move-left") {
+		m_cam.SetPos (m_cam.GetPos ( )->x-0.05,m_cam.GetPos ( )->y,m_cam.GetPos ( )->z);
+	} else if (event.event=="move-right") {
+		m_cam.SetPos (m_cam.GetPos ( )->x+0.05,m_cam.GetPos ( )->y,m_cam.GetPos ( )->z);
+	}
 }
 
 unsigned int TestSystem::loadShaders ( ) {

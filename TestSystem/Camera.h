@@ -19,6 +19,7 @@ public:
 	glm::mat4* GetViewMatrix ( ) { return &m_view; }
 	glm::mat4* GetProjectionMatrix ( ) { return &m_projection; }
 	glm::vec3* GetLookAt ( ) { return &m_lookAt; }
+	glm::vec3* GetPos ( ) { return &m_pos; }
 	float GetFOV ( ) { return m_fov; }
 	float GetAspectRatio ( ) { return m_aspect; }
 	float GetNearPlane ( ) { return m_nearPlane; }

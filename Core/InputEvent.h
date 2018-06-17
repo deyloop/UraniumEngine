@@ -33,7 +33,6 @@ namespace u92{
 		EVENT_KEYBOARD,
 		EVENT_KEYDOWN = 0x200,	//Keyboard button pressed down
 		EVENT_KEYUP,				//Keyboard button released
-		EVENT_KEYPRESS,				//Keyboard button still pressed
 
 		//Mouse Events
 		EVENT_MOUSE,
@@ -139,7 +138,7 @@ namespace u92{
 		Event_Type      type;
 		unsigned _int64 timestamp;
 		Key			    keycode;
-		char            KeyName[20];
+		char            KeyName[80];
 	} KeyBoardEvent;
 
 	//Data of mouse movement

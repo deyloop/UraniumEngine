@@ -164,6 +164,7 @@
     <ClInclude Include="System.h" />
     <ClInclude Include="ThreadPool.h" />
     <ClInclude Include="TickMessage.h" />
+    <ClInclude Include="UserInputEvent.h" />
     <ClInclude Include="WindowEvent.h" />
     <ClInclude Include="WindowsGLGraphicsSubSystem.h" />
     <ClInclude Include="WindowsInputSubSystem.h" />

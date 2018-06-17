@@ -26,7 +26,6 @@ namespace u92 {
 	WindowsInputSubSystem::WindowsInputSubSystem ( ) {
 		m_first = true;
 		m_keyInit = false;
-		resetKeyBoard ( );
 	}
 
 	WindowsInputSubSystem::~WindowsInputSubSystem ( ) { }
@@ -50,15 +49,6 @@ namespace u92 {
 	int WindowsInputSubSystem::convertMessage (HWND window,UINT message,WPARAM wParam,LPARAM lParam,InputEvent & event) {
 		POINTS ptCursor;
 		static POINTS ptPrevCursor;
-		//send out keydpress messages first.
-		/*for (unsigned i = 0; i<256; ++i) {
-			if (m_keyPressed[i]&&m_keyPosted[i]!=m_currentKeySync) {
-				event.key.type = EVENT_KEYPRESS;
-				event.key.keycode = (Key)i;
-				event.key.timestamp = GetTickCount64 ( );
-				return 0;
-			}
-		}*/
 
 		event.event.timestamp = GetTickCount64 ( );
 		switch (message) {
@@ -129,17 +119,6 @@ namespace u92 {
 				RAWINPUT* raw = reinterpret_cast<RAWINPUT*>(buffer);
 				if (raw->header.dwType==RIM_TYPEKEYBOARD) {
 					if (EvaluateKeyBaordInput (raw->data.keyboard,&event)>=0) {
-						if (event.event.type==EVENT_KEYDOWN) {
-							/*if (m_keyPressed[event.key.keycode])
-								return -1; //ignoring the event.
-							else {
-								//m_keyPressed[event.key.keycode] = true;
-							}
-						} else if (event.event.type==EVENT_KEYUP) {
-							//m_keyPressed[event.key.keycode] = false;
-
-						}*/
-						}
 						return 0;
 					}
 				}//keyboard
@@ -156,11 +135,7 @@ namespace u92 {
 		return 0;
 	}
 
-	void WindowsInputSubSystem::resetKeyBoard ( ) {
-		for (auto& key:m_keyPressed) key = false;
-		for (auto& key:m_keyPosted) key = false;
-		m_currentKeySync = true;
-	}
+	
 	int WindowsInputSubSystem::EvaluateKeyBaordInput (const RAWKEYBOARD & rawKB,InputEvent * pEvent) {
 		UINT virtualKey = rawKB.VKey;
 		UINT scanCode = rawKB.MakeCode;

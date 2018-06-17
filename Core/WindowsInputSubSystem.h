@@ -41,13 +41,8 @@ namespace u92 {
 		bool m_first;
 		bool m_keyInit;
 
-		bool   m_keyPressed[256];
-		bool   m_keyPosted[256];
-		bool   m_currentKeySync;
-
 		RAWINPUTDEVICE m_keyBoardDevice;
 
-		void resetKeyBoard();
 		int  EvaluateKeyBaordInput(const RAWKEYBOARD& rawKB, InputEvent* pEvent);
 	};
 }

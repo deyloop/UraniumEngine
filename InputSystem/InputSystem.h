@@ -4,6 +4,7 @@
 
 #include <System.h>
 #include <InputEvent.h>
+#include <TickMessage.h>
 
 using namespace u92;
 
@@ -15,8 +16,10 @@ public:
 	void threadInit ( );
 private:
 	void handleInputEvent (const InputEvent event);
-
+	void handleTickMessage (const TickMessage msg);
 	OSFramework* m_pOS;
+
+	bool m_keyPressed[256];
 };
 
 #ifdef URANIUM_EXPORTS

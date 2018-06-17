@@ -7,6 +7,7 @@
 #include <TickMessage.h>
 #include <OpenGL.h>
 #include "Camera.h"
+#include <UserInputEvent.h>
 
 using namespace u92;
 
@@ -21,6 +22,8 @@ public:
 private:
 	void handleWindowMessage (const WindowEvent event);
 	void render (const TickMessage msg);
+	void input (const UserInputEvent event);
+
 	unsigned int loadShaders ( );
 	void initGeometry ( );
 
