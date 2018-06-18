@@ -53,5 +53,19 @@ void InputSystem::handleTickMessage (const TickMessage msg) {
 		postMessage<UserInputEvent> ({ "move-left",0,0,0,0 },5);
 	if (m_keyPressed[KEY_D])
 		postMessage<UserInputEvent> ({ "move-right",0,0,0,0 },5);
+	if (m_keyPressed[KEY_D])
+		postMessage<UserInputEvent> ({ "move-right",0,0,0,0 },5);
+	if (m_keyPressed[KEY_SPACEBAR])
+		postMessage<UserInputEvent> ({ "move-up",0,0,0,0 },5);
+	if (m_keyPressed[KEY_LSHIFT])
+		postMessage<UserInputEvent> ({ "move-down",0,0,0,0 },5);
+	if (m_keyPressed[KEY_ARROW_RIGHT])
+		postMessage<UserInputEvent> ({ "rotate-right",0,0,0,0 },5);
+	if (m_keyPressed[KEY_ARROW_LEFT])
+		postMessage<UserInputEvent> ({ "rotate-left",0,0,0,0 },5);
+	if (m_keyPressed[KEY_ARROW_UP])
+		postMessage<UserInputEvent> ({ "rotate-up",0,0,0,0 },5);
+	if (m_keyPressed[KEY_ARROW_DOWN])
+		postMessage<UserInputEvent> ({ "rotate-down",0,0,0,0 },5);
 	//end temp
 }

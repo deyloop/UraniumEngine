@@ -22,7 +22,6 @@ namespace u92 {
 		}
 
 		void MessageClient::processMessages (const MessageStore& messages) {
-			if (messages.headers.size ( )==0) return;
 			for (auto& header:messages.headers) {
 				//check if we handle such a type of message
 				if (m_handlers.find (header.type)==m_handlers.end ( )) {

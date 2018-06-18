@@ -8,8 +8,16 @@
 #include <OpenGL.h>
 #include "Camera.h"
 #include <UserInputEvent.h>
+#include <vector>
+#include <glm/glm/glm.hpp>
 
 using namespace u92;
+
+struct Graphic3D{
+	int entityId;
+	unsigned int VAO;
+	glm::mat4 worldTransform;
+};
 
 class TestSystem : public System {
 public:
@@ -34,6 +42,7 @@ private:
 	unsigned int VAO;
 
 	Camera m_cam;
+	std::vector<Graphic3D> m_entities;
 };
 
 #ifdef URANIUM_EXPORTS

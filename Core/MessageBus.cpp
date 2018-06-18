@@ -2,7 +2,7 @@
 
 #include "MessageBus.h"
 #include "ThreadPool.h"
-
+#include <list>
 namespace u92 {
 	namespace core {
 		MessageBus::MessageBus ( ) {
@@ -73,10 +73,12 @@ namespace u92 {
 
 		}
 
-		void MessageBus::processClient (MessageClient* client) {
+		void MessageBus::processClient (MessageClient* client){
+			//get iterators to the channels that are subscribed
 			for (auto& subId:client->m_subscriptions) {
 				client->processMessages (m_channels[subId].store);
 			}
+
 		}
 	
 		void MessageBus::clearAllChannels ( ) {

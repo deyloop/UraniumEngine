@@ -53,13 +53,7 @@ namespace u92 {
 		event.event.timestamp = GetTickCount64 ( );
 		switch (message) {
 
-			case WM_QUIT:
-				//The OS wants the App to quit.
-				//So tell the caller the same.
-				event.event.type = EVENT_QUIT;
-				return 0;
-
-				//Mouse
+			//Mouse
 			case WM_MOUSEMOVE:
 				if (m_first) {
 					ptPrevCursor = MAKEPOINTS (lParam);

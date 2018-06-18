@@ -68,7 +68,13 @@ void TestSystem::threadInit ( ) {
 
 	gl->UseProgram (program);
 
-	//m_pOS->getOpenGLGraphicsSubSystem ( )->swapBuffers ( );
+	for (int i = 0; i<10; i++){
+		for (int j = 0; j<10; j++) {
+			Graphic3D g;
+			g.worldTransform = glm::translate (glm::vec3 (i,0,j));
+			m_entities.push_back ( g );
+		}
+	}
 }
 
 void TestSystem::handleWindowMessage (const WindowEvent event) {
@@ -103,8 +109,6 @@ void TestSystem::render (const TickMessage msg) {
 	
 	now = clock.now ( );
 	std::chrono::duration<double> frame = now-prev;
-	
-	//m_cam.SetPos (0.0f,0.0f,sin (msg.tick_number/1000.0f)*5);
 
 	m_cam.Update ( );
 
@@ -129,6 +133,13 @@ void TestSystem::render (const TickMessage msg) {
 	gl->UniformMatrix4fv (wpos,1,false,&WVP[0][0]);
 	gl->DrawArrays (GL_TRIANGLES,0,3*2*6);
 	
+	for (auto& graphic:m_entities) {
+		glm::mat4 WVP = proj*view*graphic.worldTransform;
+		gl->UniformMatrix4fv (wpos,1,false,&WVP[0][0]);
+
+		gl->DrawArrays (GL_TRIANGLES,0,3*2*6);
+	}
+
 	m_pOS->getOpenGLGraphicsSubSystem ( )->swapBuffers ( );
 	
 	prev = now;
@@ -138,14 +149,28 @@ void TestSystem::render (const TickMessage msg) {
 }
 
 void TestSystem::input (const UserInputEvent event) {
+	glm::vec3* campos = m_cam.GetPos ( );
+	auto inv = glm::inverse (*m_cam.GetViewMatrix ( ));
 	if (event.event=="move-forward") {
-		m_cam.SetPos (m_cam.GetPos ( )->x,m_cam.GetPos ( )->y,m_cam.GetPos ( )->z+0.1);
-	} else if (event.event=="move-back") {
-		m_cam.SetPos (m_cam.GetPos ( )->x,m_cam.GetPos ( )->y,m_cam.GetPos ( )->z-0.1);
-	} else if (event.event=="move-left") {
-		m_cam.SetPos (m_cam.GetPos ( )->x-0.05,m_cam.GetPos ( )->y,m_cam.GetPos ( )->z);
-	} else if (event.event=="move-right") {
-		m_cam.SetPos (m_cam.GetPos ( )->x+0.05,m_cam.GetPos ( )->y,m_cam.GetPos ( )->z);
+		*m_cam.GetViewMatrix ( ) = glm::inverse(glm::translate (inv,glm::vec3		(inv * glm::vec4 (0,0,0.05,0))));
+	} else if (event.event=="move-back") {											
+		*m_cam.GetViewMatrix ( ) = glm::inverse(glm::translate (inv,glm::vec3		(inv * glm::vec4 (0,0,-0.05,0))));
+	} else if (event.event=="move-left") {											
+		*m_cam.GetViewMatrix ( ) = glm::inverse (glm::translate (inv,glm::vec3		(inv * glm::vec4 (-0.05,0,0,0))));
+	} else if (event.event=="move-right") {											
+		*m_cam.GetViewMatrix ( ) = glm::inverse (glm::translate (inv,glm::vec3		(inv * glm::vec4 (0.05,0,0,0))));
+	} else if (event.event=="move-up") {											
+		*m_cam.GetViewMatrix ( ) = glm::inverse (glm::translate (inv,glm::vec3		(inv * glm::vec4 (0,0.05,0,0))));
+	} else if (event.event=="move-down") {											
+		*m_cam.GetViewMatrix ( ) = glm::inverse (glm::translate (inv,glm::vec3		(inv * glm::vec4 (0,-0.05,0,0))));
+	} else if (event.event=="rotate-right") {										
+		*m_cam.GetViewMatrix ( ) = glm::inverse (glm::rotate (inv,-0.1f,glm::vec3	(inv * glm::vec4 (0,1,0,0))));
+	} else if (event.event=="rotate-left") {										
+		*m_cam.GetViewMatrix ( ) = glm::inverse (glm::rotate (inv,0.1f,glm::vec3	(inv * glm::vec4 (0,1,0,0))));
+	} else if (event.event=="rotate-up") {											
+		*m_cam.GetViewMatrix ( ) = glm::inverse (glm::rotate (inv,0.1f,glm::vec3	(inv * glm::vec4 (1,0,0,0))));
+	} else if (event.event=="rotate-down") {										
+		*m_cam.GetViewMatrix ( ) = glm::inverse (glm::rotate (inv,-0.1f,glm::vec3	(inv * glm::vec4 (1,0,0,0))));
 	}
 }
 
