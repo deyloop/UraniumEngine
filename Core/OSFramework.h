@@ -28,11 +28,13 @@ namespace u92{
 	enum SubSystemType {
 		SUBSYSTEM_ALL,
 		SUBSYSTEM_OPENGL_GRAPHICS,
-		SUBSYSTEM_INPUT
+		SUBSYSTEM_INPUT,
+		SUBSYSTEM_NETWORK
 	};
 
 	class OSGLGraphicsSubSystem;
 	class OSInputSubSystem;
+	class OSNetworkSubSystem;
 	class System;
 
 	class OSFramework : public core::MessageClient {
@@ -42,8 +44,8 @@ namespace u92{
 		virtual int releaseSubSystem (SubSystemType subSystemType) = 0;
 
 		virtual OSGLGraphicsSubSystem*	getOpenGLGraphicsSubSystem ( ) = 0;
-		virtual OSInputSubSystem*  getInputSubSystem ( )	= 0;
-
+		virtual OSInputSubSystem*		getInputSubSystem ( )	= 0;
+		virtual OSNetworkSubSystem*		getNetworkSubSystem ( ) = 0;
 		virtual System* loadSystemModule(const char* moduleName)		= 0;
 
 		static OSFramework* getInstance();

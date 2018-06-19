@@ -54,6 +54,9 @@
     <ClCompile Include="GLExtensions.cpp">
       <Filter>Header Files</Filter>
     </ClCompile>
+    <ClCompile Include="WindowsNetworkSubSystem.cpp">
+      <Filter>Source Files\OSFramework\Windows</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ThreadPool.h">
@@ -121,6 +124,12 @@
     </ClInclude>
     <ClInclude Include="TransformUpdate.h">
       <Filter>Header Files\Message Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="OSNetworkSubSystem.h">
+      <Filter>Header Files\OSFramework\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowsNetworkSubSystem.h">
+      <Filter>Header Files\OSFramework\Windows</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

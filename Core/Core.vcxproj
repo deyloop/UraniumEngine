@@ -147,6 +147,7 @@
     <ClCompile Include="MessageBus.cpp" />
     <ClCompile Include="WindowsGLGraphicsSubSystem.cpp" />
     <ClCompile Include="WindowsInputSubSystem.cpp" />
+    <ClCompile Include="WindowsNetworkSubSystem.cpp" />
     <ClCompile Include="WindowsOSFramework.cpp" />
     <ClCompile Include="WinMain.cpp" />
   </ItemGroup>
@@ -160,6 +161,7 @@
     <ClInclude Include="OSGLGraphicsSubSystem.h" />
     <ClInclude Include="OSInputSubSystem.h" />
     <ClInclude Include="OSMessages.h" />
+    <ClInclude Include="OSNetworkSubSystem.h" />
     <ClInclude Include="PositionUpdate.h" />
     <ClInclude Include="RenderMessage.h" />
     <ClInclude Include="RotationUpdate.h" />
@@ -172,6 +174,7 @@
     <ClInclude Include="WindowEvent.h" />
     <ClInclude Include="WindowsGLGraphicsSubSystem.h" />
     <ClInclude Include="WindowsInputSubSystem.h" />
+    <ClInclude Include="WindowsNetworkSubSystem.h" />
     <ClInclude Include="WindowsOSFramework.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
