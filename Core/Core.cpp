@@ -2,9 +2,12 @@
 #include "MessageBus.h"
 #include "OSFramework.h"
 #include "OSMessages.h"
-#include <cstring>
+#include <string>
 #include "System.h"
 #include "TickMessage.h"
+#include <chrono>
+#include "RenderMessage.h"
+#include <fstream>
 
 namespace u92 {
 	namespace core {
@@ -25,13 +28,7 @@ namespace u92 {
 			m_pOSFramework = OSFramework::getInstance ( );
 			m_pMessageBus->registerClient (*m_pOSFramework);
 
-			System* pTest = m_pOSFramework->loadSystemModule ("TestSystem.dll");
-			pTest->init (m_pOSFramework);
-			m_pMessageBus->registerClient (*pTest);
-			
-			System* pInputSystem = m_pOSFramework->loadSystemModule ("InputSystem.dll");
-			pInputSystem->init (m_pOSFramework);
-			m_pMessageBus->registerClient (*pInputSystem);
+			LoadSystems ( );
 
 			return E_CODE_SUCCESS;
 		}
@@ -43,22 +40,67 @@ namespace u92 {
 			}
 		}
 
-		void Core::run ( ) {
+		double time_in_seconds ( ) {
+			return (double)std::chrono::high_resolution_clock::period::num/std::chrono::high_resolution_clock::period::den;
+		}
 
+		void Core::run ( ) {
+			using namespace std::chrono;
+			using namespace std::chrono_literals;
+	
 			m_running = true;
-			unsigned long long int tick = 0;
+
+			unsigned long long int tick		= 0;
+			unsigned long long int frame	= 0;
+
+			duration<double> t = 0.0ms;
+			const duration<double> dt = 10ms;
+
+			high_resolution_clock::time_point currentTime = high_resolution_clock::now ( );
+			duration<double> acc = 0.0ms;
+
 			while (m_running) {
-				postMessage<TickMessage> ({ tick },0);
+				high_resolution_clock::time_point newTime = high_resolution_clock::now ( );
+				duration<double> frametime = newTime-currentTime;
+				currentTime = newTime;
+
 				int result = m_pOSFramework->handleOSMessages ( );
 				if (result==E_CODE_QUIT_MESSAGE) {
 					m_running = false;
 					break;
 				}
+
+				acc += frametime;
+				while (acc>=dt) {
+					postMessage<TickMessage> ({ tick , dt},0);
+
+					tick++;
+					acc -= dt;
+					t += dt;
+				}
+				
+				postMessage<RenderMessage> ({ frame },0);
+
 				m_pMessageBus->syncMessages ( );
 				m_pMessageBus->proccessMessages ( );
-				
-				tick++;
+
+				frame++;
 			}
+		}
+
+		void Core::LoadSystems ( ) {
+			std::ifstream f ("..\\Data\\systems.txt");
+			std::string mod = "";
+			while (!f.eof ( )) {
+				f>>mod;
+				initSystem (mod.c_str ( ));
+			}
+		}
+
+		void Core::initSystem (const char * systemModuleName) {
+			System* pSys = m_pOSFramework->loadSystemModule (systemModuleName);
+			pSys->init (m_pOSFramework);
+			m_pMessageBus->registerClient (*pSys);
 		}
 
 

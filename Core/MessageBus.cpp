@@ -2,15 +2,19 @@
 
 #include "MessageBus.h"
 #include "ThreadPool.h"
+//#include "TaskManager.h"
+
 #include <list>
 namespace u92 {
 	namespace core {
 		MessageBus::MessageBus ( ) {
 			m_pThreadPool = new ThreadPool (std::thread::hardware_concurrency ( ));
+			//m_pTaskMAnager = new TaskManager();
 		}
 
 		MessageBus::~MessageBus ( ) {
 			delete m_pThreadPool;
+			//delete m_pTaskMAnager;
 		}
 
 		void MessageBus::syncMessages ( ) {

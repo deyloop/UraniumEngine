@@ -25,7 +25,15 @@ void InputSystem::handleInputEvent (const InputEvent event) {
 	std::string out;
 	switch (event.type) {
 		case EVENT_MOUSEMOVE: {
-			//OutputDebugString ("MOUSE\n");
+			UserInputEvent e;
+
+			e.event = "look-move";
+			e.x = event.mouse_motion.mouse_pos_x;
+			e.y = event.mouse_motion.mouse_pos_y;
+			e.dx = event.mouse_motion.delta_x;
+			e.dy = event.mouse_motion.mouse_pos_y;
+
+			postMessage<UserInputEvent>(e);
 		} break;
 		case EVENT_KEYDOWN: {
 			if (m_keyPressed[event.key.keycode]) {
@@ -51,8 +59,6 @@ void InputSystem::handleTickMessage (const TickMessage msg) {
 		postMessage<UserInputEvent> ({ "move-back",0,0,0,0 },5);
 	if (m_keyPressed[KEY_A])
 		postMessage<UserInputEvent> ({ "move-left",0,0,0,0 },5);
-	if (m_keyPressed[KEY_D])
-		postMessage<UserInputEvent> ({ "move-right",0,0,0,0 },5);
 	if (m_keyPressed[KEY_D])
 		postMessage<UserInputEvent> ({ "move-right",0,0,0,0 },5);
 	if (m_keyPressed[KEY_SPACEBAR])

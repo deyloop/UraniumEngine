@@ -4,12 +4,12 @@
 
 #include <System.h>
 #include <WindowEvent.h>
-#include <TickMessage.h>
+#include <RenderMessage.h>
 #include <OpenGL.h>
 #include "Camera.h"
-#include <UserInputEvent.h>
 #include <vector>
 #include <glm/glm/glm.hpp>
+#include "../LogicSyatem/TransformUpdate.h"
 
 using namespace u92;
 
@@ -29,8 +29,8 @@ public:
 	void threadInit ( );
 private:
 	void handleWindowMessage (const WindowEvent event);
-	void render (const TickMessage msg);
-	void input (const UserInputEvent event);
+	void render (const RenderMessage msg);
+	void transUpdate (const TransformUpdate update);
 
 	unsigned int loadShaders ( );
 	void initGeometry ( );

@@ -37,15 +37,17 @@ void TestSystem::init (OSFramework* pOS ) {
 	m_pOS = pOS;
 	m_pOS->initSubSystem (SUBSYSTEM_OPENGL_GRAPHICS);
 	registerHandler<WindowEvent> (std::bind (&TestSystem::handleWindowMessage,this,std::placeholders::_1));
-	registerHandler<TickMessage> (std::bind (&TestSystem::render,this,std::placeholders::_1));
-	registerHandler<UserInputEvent> (std::bind (&TestSystem::input,this,std::placeholders::_1));
+	registerHandler<RenderMessage> (std::bind (&TestSystem::render,this,std::placeholders::_1));
+	registerHandler<TransformUpdate> (std::bind (&TestSystem::transUpdate,this,std::placeholders::_1));
+
 	subscribe (2);
 	subscribe (0);
-	subscribe (5);
+	subscribe (9);
 
-	(pOS->getOpenGLGraphicsSubSystem())->createWindow("kuchbhi",500,500);
+	(pOS->getOpenGLGraphicsSubSystem())->createWindow("kuchbhi",1000,1000);
 
 	setthreadAfinity (true);
+	m_cam.SetFOV (90);
 }
 
 void TestSystem::release ( ) {
@@ -68,8 +70,8 @@ void TestSystem::threadInit ( ) {
 
 	gl->UseProgram (program);
 
-	for (int i = 0; i<10; i++){
-		for (int j = 0; j<10; j++) {
+	for (int i = 0; i<16; i++){
+		for (int j = 0; j<16; j++) {
 			Graphic3D g;
 			g.worldTransform = glm::translate (glm::vec3 (i,0,j));
 			m_entities.push_back ( g );
@@ -101,7 +103,7 @@ void TestSystem::handleWindowMessage (const WindowEvent event) {
 #include <chrono>
 #include <sstream>
 
-void TestSystem::render (const TickMessage msg) {
+void TestSystem::render (const RenderMessage msg) {
 	//Render the frame.
 	static std::chrono::high_resolution_clock clock;
 	static auto now = clock.now ( );
@@ -116,22 +118,8 @@ void TestSystem::render (const TickMessage msg) {
 
 	glm::mat4 proj = *m_cam.GetProjectionMatrix ( );
 	glm::mat4 view = *m_cam.GetViewMatrix ( );
-	glm::mat4 world = glm::mat4 (1);
-	world = glm::rotate (world,(float)msg.tick_number/20.0f,glm::vec3 (1,0,0));
-	world = glm::rotate (world,(float)msg.tick_number/30.0f,glm::vec3 (0,1,0));
-	glm::mat4 WVP = proj*view*world;
 
 	GLint wpos = gl->GetUniformLocation (program,"world");
-	gl->UniformMatrix4fv (wpos,1,false,&WVP[0][0]);
-
-	gl->DrawArrays (GL_TRIANGLES,0,3*2*6);
-
-	world = glm::mat4 (1);
-	world = glm::translate (world,glm::vec3 (2,1,0));
-	WVP = proj*view*world;
-
-	gl->UniformMatrix4fv (wpos,1,false,&WVP[0][0]);
-	gl->DrawArrays (GL_TRIANGLES,0,3*2*6);
 	
 	for (auto& graphic:m_entities) {
 		glm::mat4 WVP = proj*view*graphic.worldTransform;
@@ -148,30 +136,8 @@ void TestSystem::render (const TickMessage msg) {
 	OutputDebugString (stream.str().c_str());
 }
 
-void TestSystem::input (const UserInputEvent event) {
-	glm::vec3* campos = m_cam.GetPos ( );
-	auto inv = glm::inverse (*m_cam.GetViewMatrix ( ));
-	if (event.event=="move-forward") {
-		*m_cam.GetViewMatrix ( ) = glm::inverse(glm::translate (inv,glm::vec3		(inv * glm::vec4 (0,0,0.05,0))));
-	} else if (event.event=="move-back") {											
-		*m_cam.GetViewMatrix ( ) = glm::inverse(glm::translate (inv,glm::vec3		(inv * glm::vec4 (0,0,-0.05,0))));
-	} else if (event.event=="move-left") {											
-		*m_cam.GetViewMatrix ( ) = glm::inverse (glm::translate (inv,glm::vec3		(inv * glm::vec4 (-0.05,0,0,0))));
-	} else if (event.event=="move-right") {											
-		*m_cam.GetViewMatrix ( ) = glm::inverse (glm::translate (inv,glm::vec3		(inv * glm::vec4 (0.05,0,0,0))));
-	} else if (event.event=="move-up") {											
-		*m_cam.GetViewMatrix ( ) = glm::inverse (glm::translate (inv,glm::vec3		(inv * glm::vec4 (0,0.05,0,0))));
-	} else if (event.event=="move-down") {											
-		*m_cam.GetViewMatrix ( ) = glm::inverse (glm::translate (inv,glm::vec3		(inv * glm::vec4 (0,-0.05,0,0))));
-	} else if (event.event=="rotate-right") {										
-		*m_cam.GetViewMatrix ( ) = glm::inverse (glm::rotate (inv,-0.1f,glm::vec3	(inv * glm::vec4 (0,1,0,0))));
-	} else if (event.event=="rotate-left") {										
-		*m_cam.GetViewMatrix ( ) = glm::inverse (glm::rotate (inv,0.1f,glm::vec3	(inv * glm::vec4 (0,1,0,0))));
-	} else if (event.event=="rotate-up") {											
-		*m_cam.GetViewMatrix ( ) = glm::inverse (glm::rotate (inv,0.1f,glm::vec3	(inv * glm::vec4 (1,0,0,0))));
-	} else if (event.event=="rotate-down") {										
-		*m_cam.GetViewMatrix ( ) = glm::inverse (glm::rotate (inv,-0.1f,glm::vec3	(inv * glm::vec4 (1,0,0,0))));
-	}
+void TestSystem::transUpdate (const TransformUpdate update) {
+	*m_cam.GetViewMatrix ( ) = update.transform;
 }
 
 unsigned int TestSystem::loadShaders ( ) {

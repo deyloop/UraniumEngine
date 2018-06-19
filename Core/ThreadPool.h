@@ -56,7 +56,7 @@ namespace u92 {
 						// first we check the thread specific queue
 						bool cont = false;
 						{
-							std::unique_lock<std::mutex> lock (*(this->threadSpecificQueueMutexes[i]));
+							std::lock_guard<std::mutex> lock (*(this->threadSpecificQueueMutexes[i]));
 							if (!this->stop&&!this->threadSpecificQueues[i].empty ( )) {
 								task = std::move (this->threadSpecificQueues[i].front ( ));
 								this->threadSpecificQueues[i].pop ( );
@@ -72,7 +72,7 @@ namespace u92 {
 						{
 							std::unique_lock<std::mutex> lock (this->queue_mutex);
 							this->condition.wait (lock,
-												  [this,i] { return this->stop||!this->tasks.empty ( )||!this->threadSpecificQueues[i].empty(); });
+												  [this,i] { return this->stop||!this->tasks.empty ( ) || !this->threadSpecificQueues[i].empty(); });
 							if (this->stop && this->tasks.empty ( ))
 								return;
 							if (!this->threadSpecificQueues[i].empty ( )) continue;
@@ -121,7 +121,7 @@ namespace u92 {
 
 			std::future<return_type> res = task->get_future ( );
 			{
-				std::unique_lock<std::mutex> lock (*(threadSpecificQueueMutexes[threadIndex]));
+				std::lock_guard<std::mutex> lock (*(threadSpecificQueueMutexes[threadIndex]));
 				//don't allow enqueing after stopping the pool
 				if (stop)
 					throw std::runtime_error ("enqueue on stopped ThreadPool");

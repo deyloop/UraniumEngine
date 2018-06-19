@@ -27,6 +27,9 @@ namespace u92 {
 
 		private:
 			bool			m_running;
+			
+			void LoadSystems ( );
+			void initSystem (const char* systemModuleName);
 
 			MessageBus*		m_pMessageBus;
 			OSFramework*	m_pOSFramework;

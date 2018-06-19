@@ -10,6 +10,7 @@ namespace u92 {
 	namespace core {
 		class ThreadPool;
 		class MessageClient;
+		//class TaskManager;
 
 		struct Channel {
 			MessageStore store;
@@ -33,6 +34,7 @@ namespace u92 {
 			std::map<int,Channel> m_channels;
 			std::vector<MessageClient*> m_clients;
 			ThreadPool* m_pThreadPool;
+			//TaskManager* m_pTaskMAnager;
 		};
 	}
 }
