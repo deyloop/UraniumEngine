@@ -101,4 +101,11 @@ namespace u92 {
 			return E_CODE_SOCKET_RECVFAILED;
 		return E_CODE_SUCCESS;
 	}
+	int WindowsNetworkSubSystem::disconnect (Socket socket) {
+		if (socket.socket!=nullptr) {
+			closesocket (*((SOCKET*)socket.socket));
+			m_sockets.remove (*((SOCKET*)socket.socket));
+		}
+		return E_CODE_SUCCESS;
+	}
 }

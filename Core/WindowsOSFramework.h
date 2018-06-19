@@ -30,6 +30,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 namespace u92 {
 	class WindowsInputSubSystem;
 	class WindowsGLGraphicsSubSystem;
+	class WindowsNetworkSubSystem;
 
 	class WindowsOSFramework : public OSFramework {
 	public:
@@ -43,6 +44,7 @@ namespace u92 {
 
 		OSGLGraphicsSubSystem*	getOpenGLGraphicsSubSystem ( );
 		OSInputSubSystem*		getInputSubSystem ( );
+		OSNetworkSubSystem *	getNetworkSubSystem ( );
 
 		int handleOSMessages();
 
@@ -71,6 +73,7 @@ namespace u92 {
 		
 		WindowsInputSubSystem*		m_pInputSubSystem;
 		WindowsGLGraphicsSubSystem*	m_pGraphicsSubsystem;
+		WindowsNetworkSubSystem*    m_pNetworkSubSystem;
 
 		HWND m_windowHandle;
 		WNDCLASSEX m_windowClass;

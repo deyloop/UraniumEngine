@@ -12,6 +12,7 @@ namespace u92 {
 		virtual Socket connect (const char* ipaddr,const char* port)		= 0;
 		virtual int send (Socket socket,const char* data,size_t data_size)	= 0;
 		virtual int recieve (Socket socket,char* buffer,size_t buffer_size) = 0;
+		virtual int disconnect (Socket socket) = 0;
 		//TODO add listen
 	};
 }

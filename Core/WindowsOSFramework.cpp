@@ -23,6 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "WindowsGLGraphicsSubSystem.h"
 #include "WindowsInputSubSystem.h"
+#include "WindowsNetworkSubSystem.h"
 #include "System.h"
 
 namespace u92 {
@@ -40,6 +41,7 @@ namespace u92 {
 	WindowsOSFramework::WindowsOSFramework(){
 		m_pGraphicsSubsystem	= nullptr;
 		m_pInputSubSystem		= nullptr;
+		m_pNetworkSubSystem		= nullptr;
 		m_windowClass			= {};
 		m_windowHandle			= NULL;
 	}
@@ -103,6 +105,10 @@ namespace u92 {
 			m_pGraphicsSubsystem = new WindowsGLGraphicsSubSystem;
 			ret = m_pGraphicsSubsystem->init();
 			break;
+		case SUBSYSTEM_NETWORK:
+			m_pNetworkSubSystem = new WindowsNetworkSubSystem;
+			ret = m_pNetworkSubSystem->init ( );
+			break;
 		default:
 			ret = E_CODE_UNKOWN_SUBSYSTEM;
 		}
@@ -134,7 +140,15 @@ namespace u92 {
 					break;
 				delete m_pGraphicsSubsystem;
 				m_pGraphicsSubsystem = nullptr;
+			} 
+			break;
+		case SUBSYSTEM_NETWORK: {
+			if (m_pNetworkSubSystem) {
+				m_pNetworkSubSystem->release ( );
+				delete m_pNetworkSubSystem;
+				m_pNetworkSubSystem = nullptr;
 			}
+		}break;
 		default:
 			ret = E_CODE_UNKOWN_SUBSYSTEM;
 		}
@@ -150,6 +164,9 @@ namespace u92 {
 		return m_pInputSubSystem;
 	}
 
+	OSNetworkSubSystem* WindowsOSFramework::getNetworkSubSystem ( ) {
+		return m_pNetworkSubSystem;
+	}
 	int WindowsOSFramework::handleOSMessages() {
 		int ret = E_CODE_SUCCESS;
 
