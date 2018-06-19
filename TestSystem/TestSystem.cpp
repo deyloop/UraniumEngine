@@ -38,7 +38,8 @@ void TestSystem::init (OSFramework* pOS ) {
 	m_pOS->initSubSystem (SUBSYSTEM_OPENGL_GRAPHICS);
 	registerHandler<WindowEvent> (std::bind (&TestSystem::handleWindowMessage,this,std::placeholders::_1));
 	registerHandler<RenderMessage> (std::bind (&TestSystem::render,this,std::placeholders::_1));
-	registerHandler<TransformUpdate> (std::bind (&TestSystem::transUpdate,this,std::placeholders::_1));
+	registerHandler<PositionUpdate> (std::bind (&TestSystem::posUpdate,this,std::placeholders::_1));
+	registerHandler<RotationUpdate> (std::bind (&TestSystem::rotUpdate,this,std::placeholders::_1));
 
 	subscribe (2);
 	subscribe (0);
@@ -77,6 +78,8 @@ void TestSystem::threadInit ( ) {
 			m_entities.push_back ( g );
 		}
 	}
+
+	m_cam.Update ( );
 }
 
 void TestSystem::handleWindowMessage (const WindowEvent event) {
@@ -95,6 +98,7 @@ void TestSystem::handleWindowMessage (const WindowEvent event) {
 				gl->Viewport (0,0,event.resize.newWidth,event.resize.newHieght);
 				float aspect = (float)event.resize.newWidth/event.resize.newHieght;
 				m_cam.SetAspectRatio (aspect);
+				m_cam.Update ( );
 			}
 		}
 	}
@@ -111,8 +115,6 @@ void TestSystem::render (const RenderMessage msg) {
 	
 	now = clock.now ( );
 	std::chrono::duration<double> frame = now-prev;
-
-	m_cam.Update ( );
 
 	gl->Clear (GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
 
@@ -136,8 +138,22 @@ void TestSystem::render (const RenderMessage msg) {
 	OutputDebugString (stream.str().c_str());
 }
 
-void TestSystem::transUpdate (const TransformUpdate update) {
-	*m_cam.GetViewMatrix ( ) = update.transform;
+void TestSystem::posUpdate (const PositionUpdate msg) {
+	m_cam.SetPos (msg.x,msg.y,msg.z);
+	m_cam.Update ( );
+}
+
+void TestSystem::rotUpdate (const RotationUpdate msg) {
+	glm::mat4 rotation = glm::mat4 (1.0f);
+
+	rotation *= glm::rotate (msg.y,glm::vec3 (0,1,0));
+	rotation *= glm::rotate (msg.x,glm::vec3 (1,0,0));
+	rotation *= glm::rotate (msg.z,glm::vec3 (0,0,1));
+
+	glm::vec3 forward = glm::vec3 (rotation*glm::vec4 (0,0,1,0));
+	glm::vec3 look = *m_cam.GetPos ( )+forward;
+	m_cam.SetLookAt (look.x,look.y,look.z);
+	m_cam.Update ( );
 }
 
 unsigned int TestSystem::loadShaders ( ) {

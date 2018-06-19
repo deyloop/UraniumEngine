@@ -160,10 +160,14 @@
     <ClInclude Include="OSGLGraphicsSubSystem.h" />
     <ClInclude Include="OSInputSubSystem.h" />
     <ClInclude Include="OSMessages.h" />
+    <ClInclude Include="PositionUpdate.h" />
     <ClInclude Include="RenderMessage.h" />
+    <ClInclude Include="RotationUpdate.h" />
+    <ClInclude Include="ScaleUpdate.h" />
     <ClInclude Include="System.h" />
     <ClInclude Include="ThreadPool.h" />
     <ClInclude Include="TickMessage.h" />
+    <ClInclude Include="TransformUpdate.h" />
     <ClInclude Include="UserInputEvent.h" />
     <ClInclude Include="WindowEvent.h" />
     <ClInclude Include="WindowsGLGraphicsSubSystem.h" />

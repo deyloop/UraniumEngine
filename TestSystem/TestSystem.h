@@ -9,7 +9,7 @@
 #include "Camera.h"
 #include <vector>
 #include <glm/glm/glm.hpp>
-#include "../LogicSyatem/TransformUpdate.h"
+#include <TransformUpdate.h>
 
 using namespace u92;
 
@@ -30,7 +30,8 @@ public:
 private:
 	void handleWindowMessage (const WindowEvent event);
 	void render (const RenderMessage msg);
-	void transUpdate (const TransformUpdate update);
+	void posUpdate (const PositionUpdate msg);
+	void rotUpdate (const RotationUpdate msg);
 
 	unsigned int loadShaders ( );
 	void initGeometry ( );

@@ -19,7 +19,7 @@ void Camera::CreateProjectionMatrix (float fov,float aspect,float nearPlane,floa
 }
 
 void Camera::Update ( ) {
-	//m_view = glm::lookAt (m_pos,m_lookAt,glm::vec3 (0.0f,1.0f,0.0f));
+	m_view = glm::lookAt (m_pos,m_lookAt,glm::vec3 (0.0f,1.0f,0.0f));
 	CreateProjectionMatrix (m_fov,m_aspect,m_nearPlane,m_farPlane);
 }
 

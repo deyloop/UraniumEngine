@@ -110,5 +110,17 @@
     <ClInclude Include="RenderMessage.h">
       <Filter>Header Files\Message Structures</Filter>
     </ClInclude>
+    <ClInclude Include="PositionUpdate.h">
+      <Filter>Header Files\Message Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="RotationUpdate.h">
+      <Filter>Header Files\Message Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="ScaleUpdate.h">
+      <Filter>Header Files\Message Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="TransformUpdate.h">
+      <Filter>Header Files\Message Structures</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
