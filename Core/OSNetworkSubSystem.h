@@ -4,16 +4,17 @@
 
 namespace u92 {
 	struct Socket {
-		void* socket;
+		int i;
 	};
 
 	class OSNetworkSubSystem {
 	public:
 		virtual Socket connect (const char* ipaddr,const char* port)		= 0;
-		virtual int send (Socket socket,const char* data,size_t data_size)	= 0;
-		virtual int recieve (Socket socket,char* buffer,size_t buffer_size) = 0;
+		virtual int Send (Socket socket,const char* data,size_t data_size)	= 0;
+		virtual int recieve (Socket socket,char* buffer,size_t buffer_size, bool block = false) = 0;
 		virtual int disconnect (Socket socket) = 0;
-		//TODO add listen
+		virtual Socket setListen (unsigned short port)		= 0;
+		virtual Socket checkAccept (Socket listeningSocket) = 0;
 	};
 }
 

@@ -135,7 +135,7 @@ void TestSystem::render (const RenderMessage msg) {
 	prev = now;
 	std::stringstream stream;
 	stream<<"Framerate: "<<1.0/frame.count ( ) <<"s \n";
-	OutputDebugString (stream.str().c_str());
+	//OutputDebugString (stream.str().c_str());
 }
 
 void TestSystem::posUpdate (const PositionUpdate msg) {

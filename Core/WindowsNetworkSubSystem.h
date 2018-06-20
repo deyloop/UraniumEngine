@@ -4,7 +4,7 @@
 
 #include "OSNetworkSubSystem.h"
 #include <Windows.h>
-#include <list>
+#include <vector>
 
 namespace u92 {
 	class WindowsNetworkSubSystem : public OSNetworkSubSystem {
@@ -15,12 +15,15 @@ namespace u92 {
 		void release ( );
 
 		Socket connect (const char* ipaddr,const char* port);
-		int send (Socket socket,const char* data,size_t data_size);
-		int recieve (Socket socket,char* buffer,size_t buffer_size);
+		int Send (Socket socket,const char* data,size_t data_size);
+		int recieve (Socket socket,char* buffer,size_t buffer_size,bool block);
 		int disconnect (Socket socket);
+		Socket setListen (unsigned short port);
+		Socket checkAccept (Socket listeningSocket);
+
 	private:
 		bool m_winSockInitialized;
-		std::list<SOCKET> m_sockets;
+		std::vector<SOCKET> m_sockets;
 	};
 }
 #endif
