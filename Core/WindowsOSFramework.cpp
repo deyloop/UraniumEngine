@@ -173,6 +173,10 @@ namespace u92 {
 		//check to see if internal queues have anything, if yes,
 		//process them from here.
 		
+		if (m_quit.posted) {
+			PostQuitMessage (m_quit.exitCode);
+		}
+
 		//Window command check
 		while (m_pInputSubSystem&&!m_inputCommandQueue.empty ( )) {
 			m_pInputSubSystem->handleCommandMsg (m_inputCommandQueue.front ( ));
@@ -183,15 +187,11 @@ namespace u92 {
 			m_pGraphicsSubsystem->handleCommandMsg(m_windowCommandQueue.front ( ));
 			m_windowCommandQueue.pop ( );
 		}
-		
-		if (m_quit.posted) {
-			PostQuitMessage (m_quit.exitCode);
-		}
 
 		MSG msg;
 		int nummsg = 0;
-		while (PeekMessage(&msg, m_windowHandle, 0, 0, PM_REMOVE) > 0) {
-			if (msg.message == WM_QUIT) {
+		while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE) > 0) {
+			if (msg.message == WM_QUIT || m_quit.posted) {
 				//return and error, so core will stop.
 				ret = E_CODE_QUIT_MESSAGE;
 				break;

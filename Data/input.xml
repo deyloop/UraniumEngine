@@ -1,0 +1,15 @@
+<Input_Contexts>
+    <context name="camera">
+        <InputEvent name="move-forward" type="EVENT_KEYPRESS" keycode="KEY_W"/>
+        <InputEvent name="move-back" type="EVENT_KEYPRESS" keycode="KEY_S"/>
+        <InputEvent name="move-left" type="EVENT_KEYPRESS" keycode="KEY_A"/>
+        <InputEvent name="move-right" type="EVENT_KEYPRESS" keycode="KEY_D"/>
+        <InputEvent name="move-up" type="EVENT_KEYPRESS" keycode="KEY_SPACEBAR"/>
+        <InputEvent name="move-down" type="EVENT_KEYPRESS" keycode="KEY_LSHIFT"/>
+        
+        <InputEvent name="look-move" type="EVENT_MOUSEMOVE"/>
+    </context>
+    <context name="system-control">
+        <InputEvent name="exit"	type="EVENT_KEYDOWN" keycode="KEY_ESCAPE"/>
+    </context>
+</Input_Contexts>

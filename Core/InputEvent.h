@@ -31,6 +31,7 @@ namespace u92{
 
 		//Keyboard Events
 		EVENT_KEYBOARD,
+		EVENT_KEYPRESS,
 		EVENT_KEYDOWN = 0x200,	//Keyboard button pressed down
 		EVENT_KEYUP,				//Keyboard button released
 
@@ -145,10 +146,10 @@ namespace u92{
 	typedef struct MouseMotionEvent {
 		Event_Type type;
 		unsigned _int64 timestamp;
-		short mouse_pos_x;
-		short mouse_pos_y;
-		short delta_x;
-		short delta_y;
+		float mouse_pos_x;
+		float mouse_pos_y;
+		float delta_x;
+		float delta_y;
 	} MouseMotionEvent;
 
 	//Data of mouse button event.

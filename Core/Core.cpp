@@ -64,15 +64,18 @@ namespace u92 {
 				duration<double> frametime = newTime-currentTime;
 				currentTime = newTime;
 
-				int result = m_pOSFramework->handleOSMessages ( );
-				if (result==E_CODE_QUIT_MESSAGE) {
-					m_running = false;
-					break;
-				}
-
 				acc += frametime;
 				while (acc>=dt) {
 					postMessage<TickMessage> ({ tick , dt},0);
+
+					int result = m_pOSFramework->handleOSMessages ( );
+					if (result==E_CODE_QUIT_MESSAGE) {
+						m_running = false;
+						break;
+					}
+
+					m_pMessageBus->syncMessages ( );
+					m_pMessageBus->proccessMessages ( );
 
 					tick++;
 					acc -= dt;

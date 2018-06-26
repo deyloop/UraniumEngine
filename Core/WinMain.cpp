@@ -22,11 +22,19 @@ RETURNS:
 -----------------------------------------------------------------------------*/
 int WINAPI WinMain (HINSTANCE instance,HINSTANCE prevInstance,
 					LPSTR cmdLine,int cmdShow) {
-	WindowsOSFramework* pOSFramework = WindowsOSFramework::getWindowsInstance ( ); //singleton << design pattern
+	WindowsOSFramework* pOSFramework = WindowsOSFramework::getWindowsInstance ( );
 	Core*				pCore = new Core;
 
 	//neccessary checks
-	if (!pOSFramework||!pCore) return 1;
+	if (!pOSFramework||!pCore) {
+		MessageBox (NULL,
+					"Out of Memory. Could not Initialise the Core Systems.\n",
+					"Fatal Error",
+					MB_OK|MB_ICONEXCLAMATION);
+		//By the way, This MessageBox function can also fail. In that case we just 
+		//Give up and exit. The return code will indicate what was wrong.
+		return 1;
+	}
 
 	int result;
 	result = pOSFramework->init (instance, cmdShow);

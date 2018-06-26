@@ -142,9 +142,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="DataFile.cpp" />
+    <ClCompile Include="DataNode.cpp" />
+    <ClCompile Include="DataTag.cpp" />
     <ClCompile Include="InputSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DataFile.h" />
+    <ClInclude Include="DataNode.h" />
+    <ClInclude Include="DataTag.h" />
+    <ClInclude Include="InputContext.h" />
     <ClInclude Include="InputSystem.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

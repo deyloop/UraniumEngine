@@ -25,13 +25,19 @@ bool LoadGLExtensions(GL& gl) {
 	
 	if(LoadWGLExtensions()) {
 
-		gl.ClearColor	= &glClearColor;
-		gl.Clear		= &glClear;
-		gl.ClearDepth	= &glClearDepth;
-		gl.Enable		= &glEnable;
-		gl.FrontFace	= &glFrontFace;
-		gl.DrawArrays	= &glDrawArrays;
-		gl.Viewport		= &glViewport;
+		gl.ClearColor	= glClearColor;
+		gl.Clear		= glClear;
+		gl.ClearDepth	= glClearDepth;
+		gl.Enable		= glEnable;
+		gl.FrontFace	= glFrontFace;
+		gl.DrawArrays	= glDrawArrays;
+		gl.Viewport		= glViewport;
+		gl.GenTextures  = glGenTextures;
+		gl.BindTexture  = glBindTexture;
+		gl.TexImage2D	= glTexImage2D;
+		gl.DeleteTextures = glDeleteTextures;
+		gl.Disable = glDisable;
+		gl.BlendFunc = glBlendFunc;
 
 		LoadGLExtentionGL(glCreateShader,		gl.CreateShader,        PFNGLCREATESHADERPROC);
 		LoadGLExtentionGL(glCreateProgram,		gl.CreateProgram,		PFNGLCREATEPROGRAMPROC);
@@ -54,6 +60,20 @@ bool LoadGLExtensions(GL& gl) {
 						
 		LoadGLExtentionGL(glGetUniformLocation,	gl.GetUniformLocation,	PFNGLGETUNIFORMLOCATIONPROC);
 		LoadGLExtentionGL(glUniformMatrix4fv,	gl.UniformMatrix4fv,	PFNGLUNIFORMMATRIX4FVPROC);
+		LoadGLExtentionGL (glGenerateMipmap,gl.GenerateMipmap,PFNGLGENERATEMIPMAPPROC);
+		LoadGLExtentionGL (glGenSamplers,gl.GenSamplers,PFNGLGENSAMPLERSPROC);
+		LoadGLExtentionGL (glSamplerParameteri,gl.SamplerParameteri,PFNGLSAMPLERPARAMETERIPROC);
+		LoadGLExtentionGL (glActiveTexture,gl.ActiveTexture,PFNGLACTIVETEXTUREPROC);
+		LoadGLExtentionGL (glBindSampler,gl.BindSampler,PFNGLBINDSAMPLERPROC);
+		LoadGLExtentionGL (glDeleteSamplers,gl.DeleteSamplers,PFNGLDELETESAMPLERSPROC);
+
+		LoadGLExtentionGL (glGetProgramiv,gl.GetProgramiv,PFNGLGETPROGRAMIVPROC);
+		LoadGLExtentionGL (glDeleteProgram,gl.DeleteProgram,PFNGLDELETEPROGRAMPROC);
+		LoadGLExtentionGL (glGetProgramInfoLog,gl.GetProgramInfoLog,PFNGLGETPROGRAMINFOLOGPROC);
+
+		LoadGLExtentionGL (glUniform1i,gl.Uniform1i,PFNGLUNIFORM1IPROC);
+		LoadGLExtentionGL (glDeleteBuffers,gl.DeleteBuffers,PFNGLDELETEBUFFERSPROC);
+		LoadGLExtentionGL (glDeleteVertexArrays,gl.DeleteVertexArrays,PFNGLDELETEVERTEXARRAYSPROC);
 
 		return true;
 	} else return false;

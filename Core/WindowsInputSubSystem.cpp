@@ -22,6 +22,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "WindowsOSFramework.h"
 #include "ErrorCode.h"
 
+#include <sstream>
+
 namespace u92 {
 	WindowsInputSubSystem::WindowsInputSubSystem ( ) {
 		m_first = true;
@@ -37,6 +39,44 @@ namespace u92 {
 			m_keyBoardDevice.dwFlags = RIDEV_NOLEGACY;
 			m_keyBoardDevice.hwndTarget = WindowsOSFramework::getWindowsInstance ( )->getWindowHandle ( );
 			RegisterRawInputDevices (&m_keyBoardDevice,1,sizeof (m_keyBoardDevice));
+
+			#ifndef HID_USAGE_PAGE_GENERIC
+			#define HID_USAGE_PAGE_GENERIC         ((USHORT) 0x01)
+			#endif
+			#ifndef HID_USAGE_GENERIC_MOUSE
+			#define HID_USAGE_GENERIC_MOUSE        ((USHORT) 0x02)
+			#endif
+
+			RAWINPUTDEVICE Rid[1];
+			Rid[0].usUsagePage = HID_USAGE_PAGE_GENERIC;
+			Rid[0].usUsage = HID_USAGE_GENERIC_MOUSE;
+			Rid[0].dwFlags = RIDEV_INPUTSINK;
+			Rid[0].hwndTarget = WindowsOSFramework::getWindowsInstance ( )->getWindowHandle ( );
+			RegisterRawInputDevices (Rid,1,sizeof (Rid[0]));
+
+			RECT rect;
+			HWND window = WindowsOSFramework::getWindowsInstance ( )->getWindowHandle ( );
+			GetClientRect (window,&rect);
+
+			POINT ul;
+			ul.x = rect.left;
+			ul.y = rect.top;
+
+			POINT lr;
+			lr.x = rect.right;
+			lr.y = rect.bottom;
+
+			MapWindowPoints (window,NULL,&ul,1);
+			MapWindowPoints (window,NULL,&lr,1);
+
+			rect.left = ul.x;
+			rect.top = ul.y;
+
+			rect.right = lr.x;
+			rect.bottom = lr.y;
+
+			ClipCursor (&rect);
+			ShowCursor (FALSE);
 			m_keyInit = true;
 		}
 		return E_CODE_SUCCESS;
@@ -49,26 +89,16 @@ namespace u92 {
 	int WindowsInputSubSystem::convertMessage (HWND window,UINT message,WPARAM wParam,LPARAM lParam,InputEvent & event) {
 		POINTS ptCursor;
 		static POINTS ptPrevCursor;
+		static float prev_x,prev_y;
+		float x,y;
 
 		event.event.timestamp = GetTickCount64 ( );
 		switch (message) {
 
 			//Mouse
-			case WM_MOUSEMOVE:
-				if (m_first) {
-					ptPrevCursor = MAKEPOINTS (lParam);
-					m_first = false;
-				}
-
-				event.event.type = EVENT_MOUSEMOVE;
-				ptCursor = MAKEPOINTS (lParam);
-				event.mouse_motion.mouse_pos_x = ptCursor.x;
-				event.mouse_motion.mouse_pos_y = ptCursor.y;
-				event.mouse_motion.delta_x = ptCursor.x-ptPrevCursor.x;
-				event.mouse_motion.delta_y = ptPrevCursor.y-ptCursor.y;
-
-				ptPrevCursor = ptCursor;
-				return 0;
+			case WM_MOUSEMOVE: {
+				
+			}return 0;
 			case WM_LBUTTONDOWN:
 				event.event.type = EVENT_MOUSEBUTTONDOWN;
 				event.mouse_button.button = MOUSE_BUTTON_L;
@@ -115,7 +145,28 @@ namespace u92 {
 					if (EvaluateKeyBaordInput (raw->data.keyboard,&event)>=0) {
 						return 0;
 					}
-				}//keyboard
+				} else if (raw->header.dwType==RIM_TYPEMOUSE) {
+					float x = raw->data.mouse.lLastX;
+					float y = raw->data.mouse.lLastY;
+
+					event.event.type = EVENT_MOUSEMOVE;
+
+					RECT rect;
+					GetWindowRect (window,&rect);
+					int width = rect.right-rect.left;
+					int height = rect.bottom-rect.top;
+
+					x = x/(width/2);
+					y = y/(height/2);
+
+					event.mouse_motion.delta_x = x;
+					event.mouse_motion.delta_y = y;
+
+					std::stringstream s;
+					s<<"x : "<<x<<" y : "<<y<<std::endl;
+					//OutputDebugString (s.str ( ).c_str ( ));
+					return 0;
+				}
 
 			}//input
 

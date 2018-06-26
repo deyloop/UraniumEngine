@@ -72,18 +72,22 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IncludePath>D:\Documents\Projects\UraniumEngine\MessageClient;D:\Documents\Projects\UraniumEngine\Dependencies\Includes;$(IncludePath)</IncludePath>
     <LibraryPath>$(OutDir);$(LibraryPath)</LibraryPath>
+    <ExecutablePath>D:\Documents\Projects\UraniumEngine\Dependencies\DLLs\x86;$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IncludePath>D:\Documents\Projects\UraniumEngine\MessageClient;D:\Documents\Projects\UraniumEngine\Dependencies\Includes;$(IncludePath)</IncludePath>
     <LibraryPath>$(OutDir);$(LibraryPath)</LibraryPath>
+    <ExecutablePath>D:\Documents\Projects\UraniumEngine\Dependencies\DLLs\x86;$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>D:\Documents\Projects\UraniumEngine\MessageClient;D:\Documents\Projects\UraniumEngine\Dependencies\Includes;$(IncludePath)</IncludePath>
     <LibraryPath>$(OutDir);$(LibraryPath)</LibraryPath>
+    <ExecutablePath>D:\Documents\Projects\UraniumEngine\Dependencies\DLLs\x64;$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>D:\Documents\Projects\UraniumEngine\MessageClient;D:\Documents\Projects\UraniumEngine\Dependencies\Includes;$(IncludePath)</IncludePath>
     <LibraryPath>$(OutDir);$(LibraryPath)</LibraryPath>
+    <ExecutablePath>D:\Documents\Projects\UraniumEngine\Dependencies\DLLs\x64;$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -152,8 +156,14 @@
     <ClCompile Include="WinMain.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AddCameraComponent.h" />
+    <ClInclude Include="AddGraphic3DComponent.h" />
+    <ClInclude Include="AddTransformComponent.h" />
     <ClInclude Include="Core.h" />
+    <ClInclude Include="CreateEntity.h" />
+    <ClInclude Include="DeleteEntity.h" />
     <ClInclude Include="ErrorCode.h" />
+    <ClInclude Include="InputContexMessagest.h" />
     <ClInclude Include="InputEvent.h" />
     <ClInclude Include="MessageBus.h" />
     <ClInclude Include="OpenGL.h" />
@@ -163,6 +173,9 @@
     <ClInclude Include="OSMessages.h" />
     <ClInclude Include="OSNetworkSubSystem.h" />
     <ClInclude Include="PositionUpdate.h" />
+    <ClInclude Include="RemoveCameraComponent.h" />
+    <ClInclude Include="RemoveGraphic3DComponent.h" />
+    <ClInclude Include="RemoveTransformComponent.h" />
     <ClInclude Include="RenderMessage.h" />
     <ClInclude Include="RotationUpdate.h" />
     <ClInclude Include="ScaleUpdate.h" />

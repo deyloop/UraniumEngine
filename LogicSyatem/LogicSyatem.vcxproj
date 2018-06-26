@@ -143,11 +143,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Entity.h" />
     <ClInclude Include="LogicSystem.h" />
     <ClInclude Include="Transform.h" />
     <ClInclude Include="TransformUpdate.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Entity.cpp" />
     <ClCompile Include="LogicSystem.cpp" />
     <ClCompile Include="Transform.cpp" />
   </ItemGroup>

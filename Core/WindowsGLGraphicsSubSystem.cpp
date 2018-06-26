@@ -115,13 +115,19 @@ namespace u92 {
 	}
 
 	void WindowsGLGraphicsSubSystem::createWindow (const char * title,int width,int height,bool fullscreen) {
+		int fwidth,fheight;
+		RECT r;
+		GetWindowRect (GetDesktopWindow ( ),&r);
+		fwidth = r.right-r.left;
+		fheight = r.bottom-r.top;
+
 		HWND window = CreateWindow (
 			WindowsOSFramework::getWindowsInstance ( )->getWindowClass ( ).lpszClassName,
 			title,
-			WS_OVERLAPPEDWINDOW,
+			(fullscreen)? WS_SYSMENU|WS_POPUP|WS_CLIPCHILDREN|WS_CLIPSIBLINGS|WS_VISIBLE:WS_OVERLAPPEDWINDOW,
 			CW_USEDEFAULT,CW_USEDEFAULT,
-			width,
-			height,
+			(fullscreen)?fwidth:width,
+			(fullscreen)?fheight:height,
 			NULL,NULL,
 			GetModuleHandle (0),
 			NULL

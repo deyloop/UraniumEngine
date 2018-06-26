@@ -33,6 +33,20 @@ struct GL{
 	 PFNGLGETUNIFORMLOCATIONPROC GetUniformLocation;
 	 PFNGLUNIFORMMATRIX4FVPROC   UniformMatrix4fv;
 
+	 PFNGLGENERATEMIPMAPPROC GenerateMipmap;
+	 PFNGLGENSAMPLERSPROC GenSamplers;
+	 PFNGLSAMPLERPARAMETERIPROC SamplerParameteri;
+	 PFNGLACTIVETEXTUREPROC ActiveTexture;
+	 PFNGLBINDSAMPLERPROC BindSampler;
+	 PFNGLDELETESAMPLERSPROC DeleteSamplers;
+
+	 PFNGLGETPROGRAMIVPROC GetProgramiv;
+	 PFNGLDELETEPROGRAMPROC DeleteProgram;
+	 PFNGLGETPROGRAMINFOLOGPROC GetProgramInfoLog;
+	 PFNGLUNIFORM1IPROC Uniform1i;
+	 PFNGLDELETEBUFFERSPROC DeleteBuffers;
+	 PFNGLDELETEVERTEXARRAYSPROC DeleteVertexArrays;
+
 	 void (__stdcall *ClearColor)(GLclampf r,GLclampf g,GLclampf b,GLclampf a);
 	 void (__stdcall *Clear)(GLbitfield mask);
 	 void (__stdcall *ClearDepth)(GLclampd depth);
@@ -40,6 +54,12 @@ struct GL{
 	 void (__stdcall *FrontFace)(GLenum mode);
 	 void (__stdcall *DrawArrays)(GLenum mode, GLint first, GLsizei count);
 	 void (__stdcall *Viewport)(GLint x, GLint y, GLsizei width, GLsizei height);
+	 void (__stdcall *GenTextures)(GLsizei n,GLuint *textures);
+	 void (__stdcall *BindTexture)(GLenum target, GLuint texture);
+	 void (__stdcall *TexImage2D)(GLenum target, GLint level,GLint internalformat,GLsizei width, GLsizei height,GLint border,GLenum format,GLenum type,const GLvoid *pixels);
+	 void (__stdcall *DeleteTextures)(GLsizei n, const GLuint* textures);
+	 void (__stdcall *Disable)(GLenum cap);
+	 void (__stdcall *BlendFunc)(GLenum sfactor,GLenum dfactor);
 };
 bool LoadGLExtensions(GL& gl);
 bool LoadWGLExtensions();

@@ -131,5 +131,32 @@
     <ClInclude Include="WindowsNetworkSubSystem.h">
       <Filter>Header Files\OSFramework\Windows</Filter>
     </ClInclude>
+    <ClInclude Include="CreateEntity.h">
+      <Filter>Header Files\Message Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="AddTransformComponent.h">
+      <Filter>Header Files\Message Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="AddCameraComponent.h">
+      <Filter>Header Files\Message Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="DeleteEntity.h">
+      <Filter>Header Files\Message Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="RemoveTransformComponent.h">
+      <Filter>Header Files\Message Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="RemoveCameraComponent.h">
+      <Filter>Header Files\Message Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="AddGraphic3DComponent.h">
+      <Filter>Header Files\Message Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="RemoveGraphic3DComponent.h">
+      <Filter>Header Files\Message Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="InputContexMessagest.h">
+      <Filter>Header Files\Message Structures</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

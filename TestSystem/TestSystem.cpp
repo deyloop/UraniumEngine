@@ -7,29 +7,7 @@
 #include <glm/glm/glm.hpp>
 #include <glm/glm/gtx/transform.hpp>
 
-const char* vertexshadercode[] = {
-	"#version 410\n",
-	"uniform mat4 world;\n",
-	"in vec3 inPos;\n",
-	"in vec3 inColor;\n",
-
-	"smooth out vec3 outColor;\n",
-	"void main(){\n",
-	"	gl_Position = world*vec4(inPos,1.0f);\n",
-	"	outColor = inColor;\n",
-	"}\n"
-};
-
-const char* fragmentshadercode[] = {
-	"#version 410\n",
-	"in vec3 outColor;\n",
-	"out vec4 color;\n",
-	"void main(){\n",
-	"	color = vec4(outColor,1.0f);\n",
-	"}\n"
-};
-
-TestSystem::TestSystem ( ) {
+TestSystem::TestSystem ( ) : m_cam(*(new Camera)){
 	gl = nullptr;
 }
 
@@ -41,14 +19,23 @@ void TestSystem::init (OSFramework* pOS ) {
 	registerHandler<PositionUpdate> (std::bind (&TestSystem::posUpdate,this,std::placeholders::_1));
 	registerHandler<RotationUpdate> (std::bind (&TestSystem::rotUpdate,this,std::placeholders::_1));
 
-	subscribe (2);
-	subscribe (0);
-	subscribe (9);
+	registerHandler<CreateEntity			> (std::bind (&TestSystem::handleCreateEntity,            this,std::placeholders::_1));
+	registerHandler<DeleteEntity			> (std::bind (&TestSystem::handleDeleteEntity,            this,std::placeholders::_1));
+	registerHandler<AddTransformComponent	> (std::bind (&TestSystem::handleAddTransformComponent,   this,std::placeholders::_1));
+	registerHandler<AddCameraComponent		> (std::bind (&TestSystem::handleAddCameraComponent,      this,std::placeholders::_1));
+	registerHandler<AddGraphic3DComponent	> (std::bind (&TestSystem::handleAddGraphic3DComponent,   this,std::placeholders::_1));
+	registerHandler<RemoveTransformComponent> (std::bind (&TestSystem::handleRemoveTransformComponent,this,std::placeholders::_1));
+	registerHandler<RemoveGraphic3DComponent> (std::bind (&TestSystem::handleRemoveGraphic3DComponent,this,std::placeholders::_1));
+	registerHandler<RemoveCameraComponent	> (std::bind (&TestSystem::handleRemoveCameraComponent,   this,std::placeholders::_1));
 
-	(pOS->getOpenGLGraphicsSubSystem())->createWindow("kuchbhi",1000,1000);
+	subscribe (6);
+	subscribe (2);
+	subscribe (9);
+	subscribe (0);
+
+	(pOS->getOpenGLGraphicsSubSystem())->createWindow("A Better Name Pls",700,700);
 
 	setthreadAfinity (true);
-	m_cam.SetFOV (90);
 }
 
 void TestSystem::release ( ) {
@@ -60,25 +47,24 @@ void TestSystem::threadInit ( ) {
 	m_pOS->getOpenGLGraphicsSubSystem ( )->initOpenGLContext (4,1);
 	gl = &m_pOS->getOpenGLGraphicsSubSystem ( )->getGLInterface ( );
 	
+	if (gl==nullptr) throw int (25);
+	Shader::setGL (*gl);
+	ShaderProgram::setGL (*gl);
+	Texture::setGL (*gl);
+	Font::setGL (*gl);
+
 	gl->ClearColor (0.0f,0.0f,0.0f,1.0f);
-	gl->ClearDepth (1.0);
+    gl->ClearDepth (1.0);
 	gl->Enable (GL_DEPTH_TEST);
 	gl->Enable (GL_CULL_FACE);
 	gl->FrontFace (GL_CCW);
 
-	program = loadShaders ( );
+	loadShaders ( );
 	initGeometry ( );
 
-	gl->UseProgram (program);
-
-	for (int i = 0; i<16; i++){
-		for (int j = 0; j<16; j++) {
-			Graphic3D g;
-			g.worldTransform = glm::translate (glm::vec3 (i,0,j));
-			m_entities.push_back ( g );
-		}
-	}
-
+	m_Cameras.emplace_back ( );
+	m_cam = m_Cameras.back ( );
+	m_cam.SetFOV (90);
 	m_cam.Update ( );
 }
 
@@ -97,8 +83,11 @@ void TestSystem::handleWindowMessage (const WindowEvent event) {
 			if (gl) {
 				gl->Viewport (0,0,event.resize.newWidth,event.resize.newHieght);
 				float aspect = (float)event.resize.newWidth/event.resize.newHieght;
-				m_cam.SetAspectRatio (aspect);
-				m_cam.Update ( );
+				if (m_Cameras.size ( )) {
+					//m_cam.SetAspectRatio (aspect);
+					//m_cam.Update ( );
+				}
+				Font::SetScreenDimentions (event.resize.newHieght,event.resize.newWidth);
 			}
 		}
 	}
@@ -109,38 +98,57 @@ void TestSystem::handleWindowMessage (const WindowEvent event) {
 
 void TestSystem::render (const RenderMessage msg) {
 	//Render the frame.
+	using namespace std::chrono_literals;
 	static std::chrono::high_resolution_clock clock;
 	static auto now = clock.now ( );
 	static auto prev = clock.now ( );
-	
+	static std::chrono::duration<double> acc = 0s;
 	now = clock.now ( );
 	std::chrono::duration<double> frame = now-prev;
-
+	static std::stringstream stream;
+	
+	acc += frame;
+	if (acc>=500ms) {
+		stream.str ("");
+		stream<<"Framerate: "<<1.0/frame.count ( )<<" FPS ";
+		acc = 0s;
+	}
 	gl->Clear (GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
 
+	
 	glm::mat4 proj = *m_cam.GetProjectionMatrix ( );
 	glm::mat4 view = *m_cam.GetViewMatrix ( );
 
-	GLint wpos = gl->GetUniformLocation (program,"world");
+	gl->BindVertexArray (VAO);
+	m_3DShader.useProgram ( );
+
+	GLint wpos = gl->GetUniformLocation (m_3DShader.getProgramID(),"world");
 	
-	for (auto& graphic:m_entities) {
-		glm::mat4 WVP = proj*view*graphic.worldTransform;
+	for (auto& graphic:m_graphic3Ds) {
+		glm::mat4 WVP = proj*view*graphic.trans.transform;
 		gl->UniformMatrix4fv (wpos,1,false,&WVP[0][0]);
 
 		gl->DrawArrays (GL_TRIANGLES,0,3*2*6);
 	}
 
-	m_pOS->getOpenGLGraphicsSubSystem ( )->swapBuffers ( );
 	
 	prev = now;
-	std::stringstream stream;
-	stream<<"Framerate: "<<1.0/frame.count ( ) <<"s \n";
+	m_font.print (stream.str(),0,0,12);
 	//OutputDebugString (stream.str().c_str());
+
+	m_pOS->getOpenGLGraphicsSubSystem ( )->swapBuffers ( );
+
 }
 
 void TestSystem::posUpdate (const PositionUpdate msg) {
-	m_cam.SetPos (msg.x,msg.y,msg.z);
-	m_cam.Update ( );
+	if (m_entities[msg.entity].hasCamera) {
+		m_cam.SetPos (msg.x,msg.y,msg.z);
+		m_cam.Update ( );
+	}
+	if (m_entities[msg.entity].hasGraphic3D) {
+		m_graphic3Ds[m_entities[msg.entity].Graphic3DIndex].trans.pos = glm::vec3 (msg.x,msg.y,msg.z);
+		m_graphic3Ds[m_entities[msg.entity].Graphic3DIndex].trans.transform = glm::translate (m_graphic3Ds[m_entities[msg.entity].Graphic3DIndex].trans.pos);
+	}
 }
 
 void TestSystem::rotUpdate (const RotationUpdate msg) {
@@ -150,56 +158,47 @@ void TestSystem::rotUpdate (const RotationUpdate msg) {
 	rotation *= glm::rotate (msg.x,glm::vec3 (1,0,0));
 	rotation *= glm::rotate (msg.z,glm::vec3 (0,0,1));
 
-	glm::vec3 forward = glm::vec3 (rotation*glm::vec4 (0,0,1,0));
-	glm::vec3 look = *m_cam.GetPos ( )+forward;
-	m_cam.SetLookAt (look.x,look.y,look.z);
-	m_cam.Update ( );
+	if (m_entities[msg.entity].hasCamera) {
+		glm::vec3 forward = glm::vec3 (rotation*glm::vec4 (0,0,1,0));
+		glm::vec3 look = *m_cam.GetPos ( )+forward;
+		m_cam.SetLookAt (look.x,look.y,look.z);
+		m_cam.Update ( );
+	}
+
+	if (m_entities[msg.entity].hasGraphic3D) {
+		m_graphic3Ds[m_entities[msg.entity].Graphic3DIndex].trans.rot = glm::vec3 (msg.x,msg.y,msg.z);
+		m_graphic3Ds[m_entities[msg.entity].Graphic3DIndex].trans.transform = glm::translate(m_graphic3Ds[m_entities[msg.entity].Graphic3DIndex].trans.pos)*rotation;
+	}
 }
 
 unsigned int TestSystem::loadShaders ( ) {
-	unsigned int vshader,fshader,program;
-	vshader = gl->CreateShader (GL_VERTEX_SHADER);
-	fshader = gl->CreateShader (GL_FRAGMENT_SHADER);
-	program = gl->CreateProgram ( );
+	Shader vert,frag;
+	vert.loadShader ("..\\Data\\3dShader.vert",GL_VERTEX_SHADER);
+	frag.loadShader ("..\\Data\\3dshader.frag",GL_FRAGMENT_SHADER);
+	vert.gpu_Upload ( );
+	frag.gpu_Upload ( );
+	m_3DShader.createProgram ( );
+	m_3DShader.addShaderToProgram (&vert);
+	m_3DShader.addShaderToProgram (&frag);
+	m_3DShader.linkProgram ( );
+	m_3DShader.gpuUpload ( );
+	//m_3DShader.useProgram ( );
 
-	gl->ShaderSource ((GLuint)vshader,9,vertexshadercode,NULL);
-	gl->ShaderSource ((GLuint)fshader,6,fragmentshadercode,NULL);
+	Shader fontvert,fontfrag;
+	fontvert.loadShader ("..\\Data\\2DFontShader.vert",GL_VERTEX_SHADER);
+	fontfrag.loadShader ("..\\Data\\2DFontShader.frag",GL_FRAGMENT_SHADER);
+	fontvert.gpu_Upload ( );
+	fontfrag.gpu_Upload ( );
+	m_FontShader.createProgram ( );
+	m_FontShader.addShaderToProgram (&fontvert);
+	m_FontShader.addShaderToProgram (&fontfrag);
+	m_FontShader.linkProgram ( );
+	m_FontShader.gpuUpload ( );
 
-	gl->CompileShader (vshader);
-	int iCompilationStatus;
-	gl->GetShaderiv (vshader,GL_COMPILE_STATUS,&iCompilationStatus);
-
-	if (iCompilationStatus==GL_FALSE) {
-		GLsizei len;
-		gl->GetShaderiv (vshader,GL_INFO_LOG_LENGTH,&len);
-
-		GLchar* log = new GLchar[len+1];
-		gl->GetShaderInfoLog (vshader,len,&len,log);
-		MessageBox (NULL,log,"Shader could not compile.",NULL);
-		delete[] log;
-		//TODO: Do I need to Delete the shader?
-	}
-	gl->CompileShader (fshader);
-	gl->GetShaderiv (fshader,GL_COMPILE_STATUS,&iCompilationStatus);
-
-	if (iCompilationStatus==GL_FALSE) {
-		GLsizei len;
-		gl->GetShaderiv (fshader,GL_INFO_LOG_LENGTH,&len);
-
-		GLchar* log = new GLchar[len+1];
-		gl->GetShaderInfoLog (fshader,len,&len,log);
-		MessageBox (NULL,log,"Shader could not compile.",NULL);
-		delete[] log;
-		//TODO: Do I need to Delete the shader?
-	}
-	gl->AttachShader (program,vshader);
-	gl->AttachShader (program,fshader);
-	gl->LinkProgram (program);
-
-	gl->DeleteShader (fshader);
-	gl->DeleteShader (vshader);
-
-	return program;
+	m_font.SetShaderProgram (&m_FontShader);
+	m_font.LoadFont ("..\\Data\\AliquamREG.ttf",24);
+	Font::SetScreenDimentions (700,700);
+	return 0; 
 }
 
 void TestSystem::initGeometry ( ) {
@@ -254,6 +253,59 @@ void TestSystem::initGeometry ( ) {
 	gl->BufferData (GL_ARRAY_BUFFER,108*sizeof (float),&colorscube[0],GL_STATIC_DRAW);
 	gl->EnableVertexAttribArray (1);
 	gl->VertexAttribPointer (1,3,GL_FLOAT,GL_FALSE,0,0);
+}
+
+void TestSystem::handleCreateEntity				(const CreateEntity				msg){
+	Entity& entity = m_entities[msg.id];
+	entity = { 0 };
+	entity.id = msg.id;
+}
+void TestSystem::handleDeleteEntity				(const DeleteEntity				msg){
+	int entityId = msg.id;
+	auto& entity = m_entities[entityId];
+	if (entity.hasGraphic3D) {
+		m_graphic3Ds[entity.Graphic3DIndex] = m_graphic3Ds.back ( );
+		int lastentity = m_graphic3Ds[entity.Graphic3DIndex].entityId;
+		m_entities[lastentity].Graphic3DIndex = entity.Graphic3DIndex;
+		m_graphic3Ds.pop_back ( );
+	}
+	m_entities.erase (entityId);
+	//if its the camera, we need to handle that casse too.
+}
+
+void TestSystem::handleAddTransformComponent	(const AddTransformComponent	msg){
+	m_entities[msg.entityId].hasTransform = true;
+}
+
+void TestSystem::handleAddCameraComponent		(const AddCameraComponent		msg){
+	m_entities[msg.entityId].hasCamera = true;
+	m_entities[msg.entityId].CameraIndex = m_Cameras.size ( );
+	m_Cameras.emplace_back ( );
+	m_cam = m_Cameras.back ( );
+}
+void TestSystem::handleAddGraphic3DComponent	(const AddGraphic3DComponent	msg){
+	m_entities[msg.EntityId].hasGraphic3D = true;
+	m_entities[msg.EntityId].Graphic3DIndex = m_graphic3Ds.size ( );
+	m_graphic3Ds.emplace_back ( );
+	m_graphic3Ds.back ( ).entityId = msg.EntityId;
+}
+void TestSystem::handleRemoveTransformComponent	(const RemoveTransformComponent	msg){
+	int entityId = msg.entityId;
+	auto& entity = m_entities[entityId];
+	entity.hasTransform = false;
+}
+void TestSystem::handleRemoveGraphic3DComponent	(const RemoveGraphic3DComponent	msg){
+	int entityId = msg.entityId;
+	auto& entity = m_entities[entityId];
+	if (entity.hasGraphic3D) {
+		m_graphic3Ds[entity.Graphic3DIndex] = m_graphic3Ds.back ( );
+		int lastentity = m_graphic3Ds[entity.Graphic3DIndex].entityId;
+		m_entities[lastentity].Graphic3DIndex = entity.Graphic3DIndex;
+		m_graphic3Ds.pop_back ( );
+	}
+}
+void TestSystem::handleRemoveCameraComponent	(const RemoveCameraComponent	msg){
+	//nah, we wont.
 }
 
 System * getSystemInstance ( ) {
