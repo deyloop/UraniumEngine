@@ -8,6 +8,7 @@
         <InputEvent name="move-down" type="EVENT_KEYPRESS" keycode="KEY_LSHIFT"/>
         
         <InputEvent name="look-move" type="EVENT_MOUSEMOVE"/>
+        <InputEvent name="mine" type="EVENT_MOUSEBUTTONDOWN" button="MOUSE_BUTTON_L"/>
     </context>
     <context name="system-control">
         <InputEvent name="exit"	type="EVENT_KEYDOWN" keycode="KEY_ESCAPE"/>

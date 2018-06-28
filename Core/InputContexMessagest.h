@@ -1,4 +1,5 @@
 #pragma once
+
 struct LoadContextFile {
 	const char* filename;
 };

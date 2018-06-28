@@ -25,13 +25,13 @@ namespace u92 {
 			for (auto& client:m_clients) {
 				for (auto& clientChannel:client->m_chanels) {
 
-					const int cur_index = m_channels[clientChannel.chanelId].store.messages.size ( );
+					const int cur_index = m_channels[clientChannel.chanelId].store[client].messages.size ( );
 					for (auto& header:clientChannel.messages.headers) {
 						header.index += cur_index;
-						m_channels[clientChannel.chanelId].store.headers.push_back (header);
+						m_channels[clientChannel.chanelId].store[client].headers.push_back (header);
 					}
 					for (auto& byte:clientChannel.messages.messages) {
-						m_channels[clientChannel.chanelId].store.messages.push_back (byte);
+						m_channels[clientChannel.chanelId].store[client].messages.push_back (byte);
 					}
 					clientChannel.messages.headers.clear ( );
 					clientChannel.messages.messages.clear ( );
@@ -80,15 +80,17 @@ namespace u92 {
 		void MessageBus::processClient (MessageClient* client){
 			//get iterators to the channels that are subscribed
 			for (auto& subId:client->m_subscriptions) {
-				client->processMessages (m_channels[subId].store);
+				for (auto& a:m_channels[subId].store) {
+					if(a.first != client)
+						client->processMessages (a.second);
+				}
 			}
 
 		}
 	
 		void MessageBus::clearAllChannels ( ) {
 			for (auto& channel:m_channels) {
-				channel.second.store.headers.clear ( );
-				channel.second.store.messages.clear ( );
+				channel.second.store.clear ( );
 			}
 		}
 	}

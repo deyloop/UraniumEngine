@@ -7,6 +7,8 @@
 #include <glm/glm/glm.hpp>
 #include <glm/glm/gtx/transform.hpp>
 
+int w = 700,h =700;
+
 TestSystem::TestSystem ( ) : m_cam(*(new Camera)){
 	gl = nullptr;
 }
@@ -53,7 +55,7 @@ void TestSystem::threadInit ( ) {
 	Texture::setGL (*gl);
 	Font::setGL (*gl);
 
-	gl->ClearColor (0.0f,0.0f,0.0f,1.0f);
+	gl->ClearColor (0.0f,0.0f,0.3f,1.0f);
     gl->ClearDepth (1.0);
 	gl->Enable (GL_DEPTH_TEST);
 	gl->Enable (GL_CULL_FACE);
@@ -86,6 +88,8 @@ void TestSystem::handleWindowMessage (const WindowEvent event) {
 				if (m_Cameras.size ( )) {
 					//m_cam.SetAspectRatio (aspect);
 					//m_cam.Update ( );
+					w = event.resize.newWidth;
+					h = event.resize.newHieght;
 				}
 				Font::SetScreenDimentions (event.resize.newHieght,event.resize.newWidth);
 			}
@@ -133,8 +137,10 @@ void TestSystem::render (const RenderMessage msg) {
 
 	
 	prev = now;
-	m_font.print (stream.str(),0,0,12);
+	m_font.print (stream.str(),0,0,24);
 	//OutputDebugString (stream.str().c_str());
+
+	m_font.print ("+",w/2.0f,h/2.0f,30);
 
 	m_pOS->getOpenGLGraphicsSubSystem ( )->swapBuffers ( );
 
@@ -205,38 +211,50 @@ void TestSystem::initGeometry ( ) {
 	unsigned int VBO[2];
 
 	float cube[] = {
+		//front face
 		-0.5f,-0.5f, 0.5f,  0.5f,-0.5f, 0.5f,  0.5f, 0.5f, 0.5f,
 		-0.5f,-0.5f, 0.5f,  0.5f, 0.5f, 0.5f, -0.5f, 0.5f, 0.5f,
+
+		//left face
 		-0.5f,-0.5f,-0.5f, -0.5f,-0.5f, 0.5f, -0.5f, 0.5f, 0.5f,
 		-0.5f,-0.5f,-0.5f, -0.5f, 0.5f, 0.5f, -0.5f, 0.5f,-0.5f,
+		
+		//back face
 		-0.5f,-0.5f,-0.5f, -0.5f, 0.5f,-0.5f,  0.5f, 0.5f,-0.5f,
 		-0.5f,-0.5f,-0.5f,  0.5f, 0.5f,-0.5f,  0.5f,-0.5f,-0.5f,
-		0.5f,-0.5f,-0.5f,  0.5f, 0.5f,-0.5f,  0.5f,-0.5f, 0.5f,
-		0.5f,-0.5f, 0.5f,  0.5f, 0.5f,-0.5f,  0.5f, 0.5f, 0.5f,
+		
+		//right face
+		 0.5f,-0.5f,-0.5f,  0.5f, 0.5f,-0.5f,  0.5f,-0.5f, 0.5f,
+		 0.5f,-0.5f, 0.5f,  0.5f, 0.5f,-0.5f,  0.5f, 0.5f, 0.5f,
+		
+		//top face
 		-0.5f, 0.5f, 0.5f,  0.5f, 0.5f, 0.5f, -0.5f, 0.5f,-0.5f,
 		-0.5f, 0.5f,-0.5f,  0.5f, 0.5f, 0.5f,  0.5f, 0.5f,-0.5f,
+		
+		//bottom face
 		-0.5f,-0.5f,-0.5f,  0.5f,-0.5f, 0.5f, -0.5f,-0.5f, 0.5f,
-		0.5f,-0.5f, 0.5f, -0.5f,-0.5f,-0.5f,  0.5f,-0.5f,-0.5f
+		 0.5f,-0.5f, 0.5f, -0.5f,-0.5f,-0.5f,  0.5f,-0.5f,-0.5f
 	};
 
-	float colorscube[] = {
+	float normals[] = {
+		0.0f,0.0f,1.0f, 0.0f,0.0f,1.0f, 0.0f,0.0f,1.0f,
+		0.0f,0.0f,1.0f, 0.0f,0.0f,1.0f, 0.0f,0.0f,1.0f,
+
+		-1.0f,0.0f,0.0f, -1.0f,0.0f,0.0f, -1.0f,0.0f,0.0f,
+		-1.0f,0.0f,0.0f, -1.0f,0.0f,0.0f, -1.0f,0.0f,0.0f,
+
+		0.0f,0.0f,-1.0f, 0.0f,0.0f,-1.0f, 0.0f,0.0f,-1.0f,
+		0.0f,0.0f,-1.0f, 0.0f,0.0f,-1.0f, 0.0f,0.0f,-1.0f,
+
 		1.0f,0.0f,0.0f, 1.0f,0.0f,0.0f, 1.0f,0.0f,0.0f,
 		1.0f,0.0f,0.0f, 1.0f,0.0f,0.0f, 1.0f,0.0f,0.0f,
 
 		0.0f,1.0f,0.0f, 0.0f,1.0f,0.0f, 0.0f,1.0f,0.0f,
 		0.0f,1.0f,0.0f, 0.0f,1.0f,0.0f, 0.0f,1.0f,0.0f,
 
-		0.0f,0.0f,1.0f, 0.0f,0.0f,1.0f, 0.0f,0.0f,1.0f,
-		0.0f,0.0f,1.0f, 0.0f,0.0f,1.0f, 0.0f,0.0f,1.0f,
+		0.0f,-1.0f,0.0f, 0.0f,-1.0f,0.0f, 0.0f,-1.0f,0.0f,
+		0.0f,-1.0f,0.0f, 0.0f,-1.0f,0.0f, 0.0f,-1.0f,0.0f,
 
-		1.0f,1.0f,0.0f, 1.0f,1.0f,0.0f, 1.0f,1.0f,0.0f,
-		1.0f,1.0f,0.0f, 1.0f,1.0f,0.0f, 1.0f,1.0f,0.0f,
-
-		0.0f,1.0f,1.0f, 0.0f,1.0f,1.0f, 0.0f,1.0f,1.0f,
-		0.0f,1.0f,1.0f, 0.0f,1.0f,1.0f, 0.0f,1.0f,1.0f,
-
-		1.0f,0.0f,1.0f, 1.0f,0.0f,1.0f, 1.0f,0.0f,1.0f,
-		1.0f,0.0f,1.0f, 1.0f,0.0f,1.0f, 1.0f,0.0f,1.0f
 	};
 
 	gl->GenVertexArrays (1,&VAO);
@@ -250,7 +268,7 @@ void TestSystem::initGeometry ( ) {
 	gl->VertexAttribPointer (0,3,GL_FLOAT,GL_FALSE,0,0);
 
 	gl->BindBuffer (GL_ARRAY_BUFFER,VBO[1]);
-	gl->BufferData (GL_ARRAY_BUFFER,108*sizeof (float),&colorscube[0],GL_STATIC_DRAW);
+	gl->BufferData (GL_ARRAY_BUFFER,108*sizeof (float),&normals[0],GL_STATIC_DRAW);
 	gl->EnableVertexAttribArray (1);
 	gl->VertexAttribPointer (1,3,GL_FLOAT,GL_FALSE,0,0);
 }

@@ -149,22 +149,30 @@ namespace u92 {
 					float x = raw->data.mouse.lLastX;
 					float y = raw->data.mouse.lLastY;
 
-					event.event.type = EVENT_MOUSEMOVE;
+					if (x==0&&y==0) {
+						if (raw->data.mouse.ulButtons==RI_MOUSE_LEFT_BUTTON_DOWN) {
+							event.event.type = EVENT_MOUSEBUTTONDOWN;
+							event.mouse_button.button = MOUSE_BUTTON_L;
+							//SetCapture (window);
+						}
+					} else {
+						event.event.type = EVENT_MOUSEMOVE;
 
-					RECT rect;
-					GetWindowRect (window,&rect);
-					int width = rect.right-rect.left;
-					int height = rect.bottom-rect.top;
+						RECT rect;
+						GetWindowRect (window,&rect);
+						int width = rect.right-rect.left;
+						int height = rect.bottom-rect.top;
 
-					x = x/(width/2);
-					y = y/(height/2);
+						x = x/(width/2);
+						y = y/(height/2);
 
-					event.mouse_motion.delta_x = x;
-					event.mouse_motion.delta_y = y;
+						event.mouse_motion.delta_x = x;
+						event.mouse_motion.delta_y = y;
 
-					std::stringstream s;
-					s<<"x : "<<x<<" y : "<<y<<std::endl;
-					//OutputDebugString (s.str ( ).c_str ( ));
+						std::stringstream s;
+						s<<"x : "<<x<<" y : "<<y<<std::endl;
+						//OutputDebugString (s.str ( ).c_str ( ));
+					}
 					return 0;
 				}
 

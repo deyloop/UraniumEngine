@@ -13,16 +13,18 @@
 #include<RemoveGraphic3DComponent.h>
 #include<RemoveCameraComponent.h>
 #include<InputContexMessagest.h>
+#include <cmath>
 
 #define uvec3(a) a.x,a.y,a.z
 
 int e = 0;
 struct Chunk {
-	glm::vec2 pos;
+	glm::vec3 pos;
 	std::vector<int> entities;
 };
 
 std::vector<Chunk> chunks;
+
 void LogicSystem::init (OSFramework * pOS) {
 	registerHandler<UserInputEvent> (std::bind (&LogicSystem::handleUserInput,this,std::placeholders::_1));
 	registerHandler<TickMessage> (std::bind (&LogicSystem::tick,this,std::placeholders::_1));
@@ -56,6 +58,46 @@ void LogicSystem::release ( ) {
 void LogicSystem::threadInit ( ) {
 	OutputDebugString ("thread init on logic\n");
 }
+
+struct point {
+	double x,y,z;
+};
+struct ray {
+	point x0,n;
+};
+struct box {
+	point min,max;
+};
+
+bool intersect (box b,ray r) {
+	double tmin = -INFINITY,tmax = INFINITY;
+	if (r.n.x!=0) {
+		double tx1 = (b.min.x-r.x0.x)/r.n.x;
+		double tx2 = (b.max.x-r.x0.x)/r.n.x;
+		tmin = glm::max (tmin,glm::min (tx1,tx2));
+		tmax = glm::min (tmax,glm::max (tx1,tx2));
+	}
+	if (r.n.y!=0) {
+		double ty1 = (b.min.y-r.x0.y)/r.n.y;
+		double ty2 = (b.max.y-r.x0.y)/r.n.y;
+		tmin = glm::max (tmin,glm::min (ty1,ty2));
+		tmax = glm::min (tmax,glm::max (ty1,ty2));
+	}
+	if (r.n.z!=0) {
+		double tz1 = (b.min.z-r.x0.z)/r.n.z;
+		double tz2 = (b.max.z-r.x0.z)/r.n.z;
+		tmin = glm::max (tmin,glm::min (tz1,tz2));
+		tmax = glm::min (tmax,glm::max (tz1,tz2));
+	}
+	return tmax>=tmin;
+}
+
+struct boxe {
+	int e;
+	box b;
+};
+std::vector<boxe> boxes;
+
 
 #include <OSMessages.h>
 
@@ -95,6 +137,24 @@ void LogicSystem::handleUserInput (const UserInputEvent event) {
 	} else if (event.event=="exit") {
 		postMessage<QuitMessage> ({ 0 },10);
 		return;
+	} else if (event.event=="mine") {
+		for (int i = 0; i<boxes.size ( );i++) {
+			//now we get the ray.
+			ray r;
+			r.x0.x = m_camtrans.getXPosition ( );
+			r.x0.y = m_camtrans.getYPosition ( );
+			r.x0.z = m_camtrans.getZPosition ( );
+
+			glm::vec3 forward = m_camtrans.GetForward ( );
+			r.n.x = forward.x;
+			r.n.y = forward.y;
+			r.n.z = forward.z;
+			if (intersect (boxes[i].b,r)) {
+				postMessage<DeleteEntity> ({ boxes[i].e },6);
+				boxes.erase (boxes.begin ( )+i);
+				break;
+			}
+		}
 	}
 
 	postMessage<PositionUpdate> ({ 0,	m_camtrans.getXPosition ( ),
@@ -110,38 +170,81 @@ void LogicSystem::handleUserInput (const UserInputEvent event) {
 }
 #include <sstream>
 
+
 void LogicSystem::tick (const TickMessage msg) {
 	//we get the 2d position of the camera
-	glm::vec2 campos (m_camtrans.getXPosition ( ),m_camtrans.getZPosition ( ));
-	//convert that into chunk positions.
-	glm::vec2 chunk = glm::floor(campos/16.0f);
-	//see if we already have this chunk generated.
+	glm::vec3 campos (m_camtrans.getXPosition ( ),m_camtrans.getYPosition ( ),m_camtrans.getZPosition ( ));
+
+	//generate just one cube;
 	
+	float x = 2.0f, y=3.0f, z=5.0f;
+	static bool f = true;
+	if (f) {
+		for (int i = 0; i<20; i++) {
+			for (int j = 0; j<20; j++) {
+				postMessage<CreateEntity> ({ e },6);
+				postMessage<AddTransformComponent> ({ e },6);
+				postMessage<AddGraphic3DComponent> ({ e },6);
+				postMessage<PositionUpdate> ({ e , x+i , y+j, z },6);
+				e++;
+
+				//now the box
+				box b;
+				b.min.x = x+i-0.5;
+				b.min.y = y+j-0.5;
+				b.min.z = z-0.5;
+
+				b.max.x = x+i+0.5;
+				b.max.y = y+j+0.5;
+				b.max.z = z+0.5;
+
+				boxe bo;
+				bo.b = b;
+				bo.e = e-1;
+				boxes.push_back (bo);
+			}
+		}
+		f = false;
+	}
+	
+
+	
+	//GenChunks (campos);
+}
+
+void LogicSystem::GenChunks (glm::vec3 campos) {
+
+	//convert that into chunk positions.
+	glm::vec3 chunk = glm::floor (campos/16.0f);
+	//see if we already have this chunk generated.
+
 	const int renderdist = 2;
 
 	//now, find chunks that need to be generated, and generate one of those chunks this tick
-	glm::vec2 chunToGen;
+	glm::vec3 chunToGen;
 	bool exists = false;
 	bool needagen = false;
 	for (int i = renderdist; i>=-renderdist; i--) {
 		for (int j = renderdist; j>=-renderdist; j--) {
-			glm::vec2 testChunk (chunk.x+i,chunk.y+j);
-			
-			std::stringstream s;
-			s<<"Checking chunk "<<testChunk.x<<" "<<testChunk.y<<std::endl;
-			//OutputDebugString (s.str ( ).c_str ( ));
-			exists = false;
-			for (auto& ch:chunks) {
-				if (testChunk==ch.pos) {
-					exists = true;
+			for (int k = renderdist; k>=-renderdist; k--) {
+				glm::vec3 testChunk (chunk.x+i,chunk.y+j,chunk.z+k);
+
+				std::stringstream s;
+				s<<"Checking chunk "<<testChunk.x<<" "<<testChunk.y<<std::endl;
+				//OutputDebugString (s.str ( ).c_str ( ));
+				exists = false;
+				for (auto& ch:chunks) {
+					if (testChunk==ch.pos) {
+						exists = true;
+						break;
+					}
+				}
+
+				if (!exists) {
+					chunToGen = testChunk;
+					needagen = true;
 					break;
 				}
-			}
-
-			if (!exists) {
-				chunToGen = testChunk;
-				needagen = true;
-				break;
 			}
 		}
 		if (needagen) break;
@@ -156,19 +259,22 @@ void LogicSystem::tick (const TickMessage msg) {
 		//we generate the chunk
 		Chunk newChunk;
 		newChunk.pos = chunToGen;
-		
+
 		for (int i = 0; i<16; i++) {
-			for (int j = 0; j<16; j++){
-				int x = chunToGen.x*16+i;
-				int y = chunToGen.y*16+j;
-				float hight = glm::perlin (glm::vec2 (x/16.0f,y/16.0f))*20;
-				for (int k = 0; k<hight; k++) {
-					postMessage<CreateEntity> ({ e },6);
-					postMessage<AddTransformComponent> ({ e },6);
-					postMessage<AddGraphic3DComponent> ({ e },6);
-					postMessage<PositionUpdate> ({ e , float (x) ,float (k) , float (y) },6);
-					newChunk.entities.push_back (e);
-					e++;
+			for (int j = 0; j<16; j++) {
+				for (int k = 0; k<16; k++) {
+					int x = chunToGen.x*16+i;
+					int y = chunToGen.y*16+j;
+					int z = chunToGen.z*16+k;
+					float val = glm::perlin (glm::vec3 (x/16.0f,y/16.0f,z/16.0f))*20;
+					if (val>10&&val<=12) {
+						postMessage<CreateEntity> ({ e },6);
+						postMessage<AddTransformComponent> ({ e },6);
+						postMessage<AddGraphic3DComponent> ({ e },6);
+						postMessage<PositionUpdate> ({ e , float (x) ,float (int (y)) , float (z) },6);
+						newChunk.entities.push_back (e);
+						e++;
+					}
 				}
 			}
 		}//*/
@@ -182,11 +288,14 @@ void LogicSystem::tick (const TickMessage msg) {
 		if (ch.pos.x>chunk.x+renderdist
 			||ch.pos.y>chunk.y+renderdist
 			||ch.pos.x<chunk.x-renderdist
-			||ch.pos.y<chunk.y-renderdist) {
-			for(auto ent : ch.entities)
+			||ch.pos.y<chunk.y-renderdist
+			||ch.pos.z>chunk.z+renderdist
+			||ch.pos.z<chunk.z-renderdist) {
+			for (auto ent:ch.entities)
 				postMessage<DeleteEntity> ({ ent },6);
 			chunks.erase (chunks.begin ( )+i);
 			break;
 		}
 	}
+
 }

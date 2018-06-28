@@ -42,7 +42,7 @@ void InputSystem::handleInputEvent (const InputEvent event) {
 		} break;
 		case EVENT_KEYUP: {
 			m_keyPressed[event.key.keycode] = false;
-		}
+		} break;
 	}
 
 	handleInput (event);
@@ -60,29 +60,6 @@ void InputSystem::handleTickMessage (const TickMessage msg) {
 			handleInput (e);
 		}
 	}
-
-	/*//temporary
-	if (m_keyPressed[KEY_W])
-		postMessage<UserInputEvent> ({ "move-forward",0,0,0,0 },5);
-	if (m_keyPressed[KEY_S])
-		postMessage<UserInputEvent> ({ "move-back",0,0,0,0 },5);
-	if (m_keyPressed[KEY_A])
-		postMessage<UserInputEvent> ({ "move-left",0,0,0,0 },5);
-	if (m_keyPressed[KEY_D])
-		postMessage<UserInputEvent> ({ "move-right",0,0,0,0 },5);
-	if (m_keyPressed[KEY_SPACEBAR])
-		postMessage<UserInputEvent> ({ "move-up",0,0,0,0 },5);
-	if (m_keyPressed[KEY_LSHIFT])
-		postMessage<UserInputEvent> ({ "move-down",0,0,0,0 },5);
-	if (m_keyPressed[KEY_ARROW_RIGHT])
-		postMessage<UserInputEvent> ({ "rotate-right",0,0,0,0 },5);
-	if (m_keyPressed[KEY_ARROW_LEFT])
-		postMessage<UserInputEvent> ({ "rotate-left",0,0,0,0 },5);
-	if (m_keyPressed[KEY_ARROW_UP])
-		postMessage<UserInputEvent> ({ "rotate-up",0,0,0,0 },5);
-	if (m_keyPressed[KEY_ARROW_DOWN])
-		postMessage<UserInputEvent> ({ "rotate-down",0,0,0,0 },5);
-	//end temp*/
 }
 
 constexpr unsigned int str2int (const char* str,int h = 0) {
@@ -98,6 +75,7 @@ Event_Type atoEvent_type (const char* str) {
 		case str2int ("EVENT_MOUSE"):	return EVENT_MOUSE;
 		case str2int ("EVENT_MOUSEMOVE"):return EVENT_MOUSEMOVE;
 		case str2int ("EVENT_KEYPRESS"): return EVENT_KEYPRESS;
+		case str2int ("EVENT_MOUSEBUTTONDOWN"): return EVENT_MOUSEBUTTONDOWN;
 	}
 	//keep adding all here.
 }
@@ -132,6 +110,14 @@ Key atoKeyCode (const char* str) {
 	return KEY_IRRELEVENT;
 }
 
+MouseButton atoMouseButton (const char* str) {
+	switch (str2int (str)) {
+		case str2int ("MOUSE_BUTTON_L"):return MOUSE_BUTTON_L;
+		case str2int ("MOUSE_BUTTON_M"):return MOUSE_BUTTON_M;
+		case str2int ("MOUSE_BUTTON_R"):return MOUSE_BUTTON_R;
+	}
+}
+
 void InputSystem::handleLoadContextFile (const LoadContextFile msg) {
 	DataFile context_file;
 	context_file.parse (msg.filename);
@@ -149,6 +135,9 @@ void InputSystem::handleLoadContextFile (const LoadContextFile msg) {
 						case EVENT_KEYDOWN:
 						case EVENT_KEYPRESS: {
 							event.key.keycode = atoKeyCode (event_node.GetAttribute ("keycode"));
+						}break;
+						case EVENT_MOUSEBUTTONDOWN: {
+							event.mouse_button.button = atoMouseButton (event_node.GetAttribute ("button"));
 						}break;
 					}//end of switch on event type.
 

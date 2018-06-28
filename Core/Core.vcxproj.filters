@@ -57,6 +57,9 @@
     <ClCompile Include="WindowsNetworkSubSystem.cpp">
       <Filter>Source Files\OSFramework\Windows</Filter>
     </ClCompile>
+    <ClCompile Include="SwapQueue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ThreadPool.h">
@@ -157,6 +160,9 @@
     </ClInclude>
     <ClInclude Include="InputContexMessagest.h">
       <Filter>Header Files\Message Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="SwapQueue.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -149,6 +149,7 @@
     <ClCompile Include="Core.cpp" />
     <ClCompile Include="GLExtensions.cpp" />
     <ClCompile Include="MessageBus.cpp" />
+    <ClCompile Include="SwapQueue.cpp" />
     <ClCompile Include="WindowsGLGraphicsSubSystem.cpp" />
     <ClCompile Include="WindowsInputSubSystem.cpp" />
     <ClCompile Include="WindowsNetworkSubSystem.cpp" />
@@ -179,6 +180,7 @@
     <ClInclude Include="RenderMessage.h" />
     <ClInclude Include="RotationUpdate.h" />
     <ClInclude Include="ScaleUpdate.h" />
+    <ClInclude Include="SwapQueue.h" />
     <ClInclude Include="System.h" />
     <ClInclude Include="ThreadPool.h" />
     <ClInclude Include="TickMessage.h" />

@@ -19,6 +19,8 @@ private:
 	void handleUserInput (const UserInputEvent event);
 	void tick (const TickMessage msg);
 
+	void GenChunks (glm::vec3 campos);
+
 	Transform m_camtrans;
 };
 

@@ -13,7 +13,7 @@ namespace u92 {
 		//class TaskManager;
 
 		struct Channel {
-			MessageStore store;
+			std::map<MessageClient*,MessageStore> store;
 		};
 
 		class MessageBus {
