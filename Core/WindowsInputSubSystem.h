@@ -37,13 +37,14 @@ namespace u92 {
 
 		int convertMessage(HWND window, UINT message, WPARAM wParam, LPARAM lParam, InputEvent& event);
 		int handleCommandMsg(const InputCommand msg);
-	private:
-		bool m_first;
-		bool m_keyInit;
 
-		RAWINPUTDEVICE m_keyBoardDevice;
+	private:
+		bool m_ResetMouseTracking;
+		bool m_Init;
+		bool m_mouseRelMode;
 
 		int  EvaluateKeyBaordInput(const RAWKEYBOARD& rawKB, InputEvent* pEvent);
+		void setMouseRelMode (bool Relmode);
 	};
 }
 

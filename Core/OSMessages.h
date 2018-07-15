@@ -9,6 +9,11 @@ namespace u92 {
 		WINDOWCOMMAND_DESTROY
 	};
 
+	enum InputCommandType {
+		INPUTCOMMAND_NONE = 0,
+		INPUTCOMMAND_MOUSERELMODE
+	};
+
 	struct CreateWindowCommand {
 		char title[20];
 		int width,height;
@@ -24,8 +29,15 @@ namespace u92 {
 		} command;
 	};
 
-	struct InputCommand {
+	struct MouseRelMode {
+		bool relMode;
+	};
 
+	struct InputCommand {
+		InputCommandType type;
+		union {
+			MouseRelMode relMode;
+		};
 	};
 
 	struct QuitMessage {

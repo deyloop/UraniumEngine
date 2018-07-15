@@ -27,8 +27,6 @@ namespace u92{
 	typedef enum {
 		EVENT_FIRSTEVENT = 0,
 
-		EVENT_QUIT = 0x100,	//App wants to quit.
-
 		//Keyboard Events
 		EVENT_KEYBOARD,
 		EVENT_KEYPRESS,
@@ -44,6 +42,7 @@ namespace u92{
 		EVENT_MOUSEBUTTONUP,		//mouse button was released.
 		EVENT_MOUSEWHEEL,			//mouse wheel was rotated.
 
+		EVENT_UNKOWN
 	} Event_Type;
 
 	//Keycodes for key board events.
@@ -157,7 +156,8 @@ namespace u92{
 		Event_Type      type;
 		unsigned _int64 timestamp;
 		MouseButton     button;
-		//...
+		float mouse_pos_x;
+		float mouse_pos_y;
 	};
 
 	//Data of mouse wheel movement.

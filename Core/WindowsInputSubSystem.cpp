@@ -25,21 +25,29 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <sstream>
 
 namespace u92 {
+	/*-------------------------------------------------------------------------
+	THe default constructor
+	-------------------------------------------------------------------------*/
 	WindowsInputSubSystem::WindowsInputSubSystem ( ) {
-		m_first = true;
-		m_keyInit = false;
+		m_ResetMouseTracking		= true;				
+		m_Init					= false;
 	}
 
-	WindowsInputSubSystem::~WindowsInputSubSystem ( ) { }
+	/*-------------------------------------------------------------------------
+	Default destructor.
+	-------------------------------------------------------------------------*/
+	WindowsInputSubSystem::~WindowsInputSubSystem ( ) {
+	
+	}
 
+	/*-------------------------------------------------------------------------
+	initializes the system. Can be called multiple times, only the first time 
+	is effective, successive attempts at initialisation are ignored.
+	RETURNS: 
+		E_CODE_SUCCESS if all goes good.
+	-------------------------------------------------------------------------*/
 	int WindowsInputSubSystem::init ( ) {
-		if (!m_keyInit) {
-			m_keyBoardDevice.usUsagePage = 0x01;
-			m_keyBoardDevice.usUsage = 0x06;
-			m_keyBoardDevice.dwFlags = RIDEV_NOLEGACY;
-			m_keyBoardDevice.hwndTarget = WindowsOSFramework::getWindowsInstance ( )->getWindowHandle ( );
-			RegisterRawInputDevices (&m_keyBoardDevice,1,sizeof (m_keyBoardDevice));
-
+		if (!m_Init) {
 			#ifndef HID_USAGE_PAGE_GENERIC
 			#define HID_USAGE_PAGE_GENERIC         ((USHORT) 0x01)
 			#endif
@@ -47,90 +55,179 @@ namespace u92 {
 			#define HID_USAGE_GENERIC_MOUSE        ((USHORT) 0x02)
 			#endif
 
-			RAWINPUTDEVICE Rid[1];
-			Rid[0].usUsagePage = HID_USAGE_PAGE_GENERIC;
-			Rid[0].usUsage = HID_USAGE_GENERIC_MOUSE;
-			Rid[0].dwFlags = RIDEV_INPUTSINK;
-			Rid[0].hwndTarget = WindowsOSFramework::getWindowsInstance ( )->getWindowHandle ( );
-			RegisterRawInputDevices (Rid,1,sizeof (Rid[0]));
+			#define RAWMOUSEDEVICE		0
+			#define RAWKEYBOARDDEVICE	1
 
-			RECT rect;
-			HWND window = WindowsOSFramework::getWindowsInstance ( )->getWindowHandle ( );
-			GetClientRect (window,&rect);
+			const HWND window = WindowsOSFramework::getWindowsInstance ( )->getWindowHandle ( );
+			RAWINPUTDEVICE Rid[2];
+			Rid[RAWMOUSEDEVICE].usUsagePage	= HID_USAGE_PAGE_GENERIC;
+			Rid[RAWMOUSEDEVICE].usUsage		= HID_USAGE_GENERIC_MOUSE;
+			Rid[RAWMOUSEDEVICE].dwFlags		= 0; //we do want legacy mouse input to be active
+			Rid[RAWMOUSEDEVICE].hwndTarget	= window;
+			
+			Rid[RAWKEYBOARDDEVICE].usUsagePage	= 0x01;
+			Rid[RAWKEYBOARDDEVICE].usUsage		= 0x06;				//this is the keyboard
+			Rid[RAWKEYBOARDDEVICE].dwFlags		= RIDEV_NOLEGACY;	//No legacy keyboard input wanted
+			Rid[RAWKEYBOARDDEVICE].hwndTarget	= window;
 
-			POINT ul;
-			ul.x = rect.left;
-			ul.y = rect.top;
+			if (RegisterRawInputDevices (Rid,2,sizeof (RAWINPUTDEVICE))==FALSE) {
+				//registration failed.
+				DWORD ecode = GetLastError ( );
+				//TODO: Check what error happened, act accordingly.
+				return E_CODE_FAIL;
+			}
 
-			POINT lr;
-			lr.x = rect.right;
-			lr.y = rect.bottom;
+			setMouseRelMode (true);
 
-			MapWindowPoints (window,NULL,&ul,1);
-			MapWindowPoints (window,NULL,&lr,1);
-
-			rect.left = ul.x;
-			rect.top = ul.y;
-
-			rect.right = lr.x;
-			rect.bottom = lr.y;
-
-			ClipCursor (&rect);
-			ShowCursor (FALSE);
-			m_keyInit = true;
+			m_Init = true;
 		}
 		return E_CODE_SUCCESS;
 	}
 
+	/*-------------------------------------------------------------------------
+	Destructor. Frees up all resources.
+	-------------------------------------------------------------------------*/
 	int WindowsInputSubSystem::release ( ) {
+		//TODO: check if raw input devices need to un registered.
+		
 		return 0;
 	}
 
-	int WindowsInputSubSystem::convertMessage (HWND window,UINT message,WPARAM wParam,LPARAM lParam,InputEvent & event) {
-		POINTS ptCursor;
+	/*-------------------------------------------------------------------------
+	Extracts X and Y coords of Mouse position from the LPARAM value.
+	PARAMETERS:
+	[IN]	window		-	Handle to the window that the input is for.
+	[IN]	lParam		-	the LPARAM value containing the coords.
+	[OUT]	x			-	will be set to the extracted x coord.
+	[OUT]	y			-	will be set to the extracted y coord.
+	-------------------------------------------------------------------------*/
+	void LParamToMouseXY (const HWND window,const LPARAM lParam,float &x,float &y) {
+		RECT   rect;
+		GetWindowRect (window,&rect);
+		int width  = rect.right-rect.left;
+		int height = rect.bottom-rect.top;
+
+		POINTS ptCursor = MAKEPOINTS (lParam);
+		x = ptCursor.x/(width/2.0f);
+		y = ptCursor.y/(height/2.0f);
+	}
+
+	/*-------------------------------------------------------------------------
+	Converts Windows Messages into InputEvent Messages, if they can be 
+	converted.
+	PARAMETERS:
+	[IN]	window		-	handle to the window for which the message coresponds
+	[IN]	message		-	the windows message to process/convert.
+	[IN]	wParam		-	the WPARAM of the message.
+	[IN]	lParam		-	the LPARAM of the message.
+	[OUT]	event		-	the converted event, if it can be processed.
+	RETURNS:
+		0	if the message was successfully processed.
+		-1  otherwise.
+	-------------------------------------------------------------------------*/
+	int WindowsInputSubSystem::convertMessage (HWND window,UINT message,
+											   WPARAM wParam,LPARAM lParam,
+											   InputEvent & event) {
 		static POINTS ptPrevCursor;
-		static float prev_x,prev_y;
-		float x,y;
 
 		event.event.timestamp = GetTickCount64 ( );
 		switch (message) {
 
 			//Mouse
 			case WM_MOUSEMOVE: {
-				
-			}return 0;
-			case WM_LBUTTONDOWN:
-				event.event.type = EVENT_MOUSEBUTTONDOWN;
-				event.mouse_button.button = MOUSE_BUTTON_L;
-				SetCapture (window);
-				return 0;
-			case WM_MBUTTONDOWN:
-				event.event.type = EVENT_MOUSEBUTTONDOWN;
-				event.mouse_button.button = MOUSE_BUTTON_M;
-				SetCapture (window);
-				return 0;
-			case WM_RBUTTONDOWN:
-				SetCapture (window);
-				event.event.type = EVENT_MOUSEBUTTONDOWN;
-				event.mouse_button.button = MOUSE_BUTTON_R;
-				return 0;
-			case WM_LBUTTONUP:
-				event.event.type = EVENT_MOUSEBUTTONUP;
-				event.mouse_button.button = MOUSE_BUTTON_L;
-				ReleaseCapture ( );
-				return 0;
-			case WM_MBUTTONUP:
-				event.event.type = EVENT_MOUSEBUTTONUP;
-				event.mouse_button.button = MOUSE_BUTTON_M;
-				ReleaseCapture ( );
-				return 0;
-			case WM_RBUTTONUP:
-				event.event.type = EVENT_MOUSEBUTTONUP;
-				event.mouse_button.button = MOUSE_BUTTON_R;
-				ReleaseCapture ( );
-				return 0;
+				if (m_mouseRelMode) return 0;
 
-				//Keyboard
+				RECT rect;
+				GetWindowRect (window,&rect);
+				int width  = rect.right-rect.left;
+				int height = rect.bottom-rect.top;
+
+				POINTS ptCursor = MAKEPOINTS(lParam);
+				if (m_ResetMouseTracking) {
+					m_ResetMouseTracking = false;
+					ptPrevCursor = ptCursor;
+				}
+
+				event.mouse_motion.type = EVENT_MOUSEMOVE;
+				
+				event.mouse_motion.mouse_pos_x = ptCursor.x/(width/2.0f);
+				event.mouse_motion.mouse_pos_y = ptCursor.y/(height/2.0f);
+
+				float prev_x = ptPrevCursor.x/(width/2.0f);
+				float prev_y = ptPrevCursor.y/(height/2.0f);
+
+				event.mouse_motion.delta_x = event.mouse_motion.mouse_pos_x-prev_x;
+				event.mouse_motion.delta_y = event.mouse_motion.mouse_pos_y-prev_y;
+
+				ptPrevCursor = ptCursor;
+			} return 0;
+			case WM_LBUTTONDOWN: {
+				if (m_mouseRelMode) return 0;
+				event.event.type = EVENT_MOUSEBUTTONDOWN;
+				event.mouse_button.button = MOUSE_BUTTON_L;
+				
+				LParamToMouseXY(window,lParam,
+								event.mouse_button.mouse_pos_x, 
+								event.mouse_button.mouse_pos_y);
+				SetCapture (window);
+			} return 0;
+			case WM_MBUTTONDOWN: {
+				if (m_mouseRelMode) return 0;
+				event.event.type = EVENT_MOUSEBUTTONDOWN;
+				event.mouse_button.button = MOUSE_BUTTON_M;
+
+				LParamToMouseXY (window,lParam,
+								 event.mouse_button.mouse_pos_x,
+								 event.mouse_button.mouse_pos_y);
+
+				SetCapture (window);
+			} return 0;
+			case WM_RBUTTONDOWN: {
+				if (m_mouseRelMode) return 0;
+				SetCapture (window);
+				event.event.type = EVENT_MOUSEBUTTONDOWN;
+				event.mouse_button.button = MOUSE_BUTTON_R;
+
+				LParamToMouseXY (window,lParam,
+								 event.mouse_button.mouse_pos_x,
+								 event.mouse_button.mouse_pos_y);
+				SetCapture (window);
+
+			} return 0;
+			case WM_LBUTTONUP: {
+				if (m_mouseRelMode) return 0;
+				event.event.type = EVENT_MOUSEBUTTONUP;
+				event.mouse_button.button = MOUSE_BUTTON_L;
+
+				LParamToMouseXY (window,lParam,
+								 event.mouse_button.mouse_pos_x,
+								 event.mouse_button.mouse_pos_y);
+
+				ReleaseCapture ( );
+			} return 0;
+			case WM_MBUTTONUP: {
+				if (m_mouseRelMode) return 0;
+				event.event.type = EVENT_MOUSEBUTTONUP;
+				event.mouse_button.button = MOUSE_BUTTON_M;
+
+				LParamToMouseXY (window,lParam,
+								 event.mouse_button.mouse_pos_x,
+								 event.mouse_button.mouse_pos_y);
+
+				ReleaseCapture ( );
+			} return 0;
+			case WM_RBUTTONUP: {
+				if (m_mouseRelMode) return 0;
+				event.event.type = EVENT_MOUSEBUTTONUP;
+				event.mouse_button.button = MOUSE_BUTTON_R;
+
+				LParamToMouseXY (window,lParam,
+								 event.mouse_button.mouse_pos_x,
+								 event.mouse_button.mouse_pos_y);
+
+				ReleaseCapture ( );
+			} return 0;
+
 			case WM_INPUT: {
 				char buffer[sizeof (RAWINPUT)] = {};
 				UINT size = sizeof (RAWINPUT);
@@ -145,15 +242,39 @@ namespace u92 {
 					if (EvaluateKeyBaordInput (raw->data.keyboard,&event)>=0) {
 						return 0;
 					}
-				} else if (raw->header.dwType==RIM_TYPEMOUSE) {
+				} else if (raw->header.dwType==RIM_TYPEMOUSE && m_mouseRelMode) {
 					float x = raw->data.mouse.lLastX;
 					float y = raw->data.mouse.lLastY;
 
 					if (x==0&&y==0) {
-						if (raw->data.mouse.ulButtons==RI_MOUSE_LEFT_BUTTON_DOWN) {
+						
+						event.mouse_button.mouse_pos_x = 0;
+						event.mouse_button.mouse_pos_y = 0;
+
+						if (raw->data.mouse.usButtonFlags & RI_MOUSE_LEFT_BUTTON_DOWN) {
 							event.event.type = EVENT_MOUSEBUTTONDOWN;
 							event.mouse_button.button = MOUSE_BUTTON_L;
-							//SetCapture (window);
+							SetCapture (window);
+						} else if (raw->data.mouse.usButtonFlags & RI_MOUSE_RIGHT_BUTTON_DOWN) {
+							event.event.type = EVENT_MOUSEBUTTONDOWN;
+							event.mouse_button.button = MOUSE_BUTTON_R;
+							SetCapture (window);
+						} else if (raw->data.mouse.usButtonFlags & RI_MOUSE_RIGHT_BUTTON_UP) {
+							event.event.type = EVENT_MOUSEBUTTONUP;
+							event.mouse_button.button = MOUSE_BUTTON_R;
+							ReleaseCapture ( );
+						} else if (raw->data.mouse.usButtonFlags & RI_MOUSE_LEFT_BUTTON_UP) {
+							event.event.type = EVENT_MOUSEBUTTONUP;
+							event.mouse_button.button = MOUSE_BUTTON_L;
+							ReleaseCapture ( );
+						} else if (raw->data.mouse.usButtonFlags & RI_MOUSE_MIDDLE_BUTTON_DOWN) {
+							event.event.type = EVENT_MOUSEBUTTONDOWN;
+							event.mouse_button.button = MOUSE_BUTTON_M;
+							SetCapture (window);
+						} else if (raw->data.mouse.usButtonFlags & RI_MOUSE_MIDDLE_BUTTON_UP) {
+							event.event.type = EVENT_MOUSEBUTTONUP;
+							event.mouse_button.button = MOUSE_BUTTON_M;
+							ReleaseCapture ( );
 						}
 					} else {
 						event.event.type = EVENT_MOUSEMOVE;
@@ -163,15 +284,13 @@ namespace u92 {
 						int width = rect.right-rect.left;
 						int height = rect.bottom-rect.top;
 
-						x = x/(width/2);
-						y = y/(height/2);
+						x = x/(width/2.0f);
+						y = y/(height/2.0f);
 
 						event.mouse_motion.delta_x = x;
 						event.mouse_motion.delta_y = y;
-
-						std::stringstream s;
-						s<<"x : "<<x<<" y : "<<y<<std::endl;
-						//OutputDebugString (s.str ( ).c_str ( ));
+						event.mouse_motion.mouse_pos_x = 0;
+						event.mouse_motion.mouse_pos_y = 0;
 					}
 					return 0;
 				}
@@ -184,8 +303,49 @@ namespace u92 {
 	}
 
 	int WindowsInputSubSystem::handleCommandMsg (const InputCommand msg) {
-
+		switch (msg.type) {
+			case INPUTCOMMAND_MOUSERELMODE: {
+				setMouseRelMode (msg.relMode.relMode);
+			}
+		}
 		return 0;
+	}
+
+	void WindowsInputSubSystem::setMouseRelMode (bool Relmode) {
+		RECT rect;
+		HWND window = WindowsOSFramework::getWindowsInstance ( )->getWindowHandle ( );
+		GetClientRect (window,&rect);
+
+		POINT ul;
+		ul.x = rect.left;
+		ul.y = rect.top;
+
+		POINT lr;
+		lr.x = rect.right;
+		lr.y = rect.bottom;
+
+		MapWindowPoints (window,NULL,&ul,1);
+		MapWindowPoints (window,NULL,&lr,1);
+
+		rect.left = ul.x;
+		rect.top = ul.y;
+
+		rect.right = lr.x;
+		rect.bottom = lr.y;
+
+		if (Relmode) {
+			//Going to Relative Mouse Tracking
+			ClipCursor (&rect);
+			while(ShowCursor (FALSE)>=0);
+		} else {
+			//Going to Absolute Mouse Tracking
+			ClipCursor (NULL);
+			while(ShowCursor (TRUE)<0);
+			SetCursorPos (rect.left+(rect.right-rect.left)/2,rect.top+(rect.bottom-rect.top)/2);
+			m_ResetMouseTracking = true;
+		}
+
+		m_mouseRelMode = Relmode;
 	}
 
 	

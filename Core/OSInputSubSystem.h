@@ -27,7 +27,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 namespace u92 {
 	class OSInputSubSystem {
 	public:
-
 	};
 }
 #endif

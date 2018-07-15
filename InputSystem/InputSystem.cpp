@@ -1,9 +1,13 @@
 #include "InputSystem.h"
 #include "DataFile.h"
+
 #include <UserInputEvent.h>
+#include <OSInputSubSystem.h>
+#include <OSMessages.h>
 
 void InputSystem::init (OSFramework * pOS) {
 	pOS->initSubSystem (SUBSYSTEM_INPUT);
+	m_pOS = pOS;
 	registerHandler<InputEvent>(std::bind (&InputSystem::handleInputEvent,this,std::placeholders::_1));
 	registerHandler<TickMessage> (std::bind (&InputSystem::handleTickMessage,this,std::placeholders::_1));
 	registerHandler<LoadContextFile> (std::bind (&InputSystem::handleLoadContextFile,this,std::placeholders::_1));
@@ -24,11 +28,8 @@ void InputSystem::threadInit ( ) {
 
 }
 
-#include <string>
-#include <sstream>
-#include <Windows.h>
-
 void InputSystem::handleInputEvent (const InputEvent event) {
+	static bool b = false;
 	std::string out;
 	switch (event.type) {
 		case EVENT_KEYDOWN: {
@@ -38,7 +39,13 @@ void InputSystem::handleInputEvent (const InputEvent event) {
 			} else {
 				m_keyPressed[event.key.keycode] = true;
 			}
-
+			if (event.key.keycode==KEY_E) {
+				InputCommand cmd;
+				cmd.type = INPUTCOMMAND_MOUSERELMODE;
+				cmd.relMode.relMode = b;
+				postMessage<InputCommand> (cmd,10);
+				b = !b;
+			}
 		} break;
 		case EVENT_KEYUP: {
 			m_keyPressed[event.key.keycode] = false;
@@ -66,51 +73,141 @@ constexpr unsigned int str2int (const char* str,int h = 0) {
 	return !str[h] ? 5381 : (str2int (str,h+1)*33)^str[h];
 }
 
-Event_Type atoEvent_type (const char* str) {
+constexpr const Event_Type atoEvent_type (const char* str) {
+	//keep close attention to this macro. 
+	//It was created to make writing code easier.
+	#define chooseEvent(event) case str2int(#event) : return event
+	
 	switch (str2int (str)) {
-		case str2int ("EVENT_KEYDOWN"):	return EVENT_KEYDOWN;
-		case str2int ("EVENT_KEYUP"):	return EVENT_KEYUP;
-		case str2int ("EVENT_QUIT"):		return EVENT_QUIT;
-		case str2int ("EVENT_KEYBOARD"): return EVENT_KEYBOARD;
-		case str2int ("EVENT_MOUSE"):	return EVENT_MOUSE;
-		case str2int ("EVENT_MOUSEMOVE"):return EVENT_MOUSEMOVE;
-		case str2int ("EVENT_KEYPRESS"): return EVENT_KEYPRESS;
-		case str2int ("EVENT_MOUSEBUTTONDOWN"): return EVENT_MOUSEBUTTONDOWN;
+		chooseEvent (EVENT_KEYDOWN);
+		chooseEvent (EVENT_KEYUP);
+		chooseEvent (EVENT_KEYBOARD);
+		chooseEvent (EVENT_MOUSE);
+		chooseEvent (EVENT_MOUSEMOVE);
+		chooseEvent (EVENT_KEYPRESS);
+		chooseEvent (EVENT_MOUSEBUTTONDOWN);
+		chooseEvent (EVENT_MOUSEBUTTONUP);
+		chooseEvent (EVENT_MOUSEWHEEL);
+		chooseEvent (EVENT_FIRSTEVENT);
 	}
-	//keep adding all here.
+	return EVENT_UNKOWN;
 }
 
-Key atoKeyCode (const char* str) {
+constexpr const Key atoKeyCode (const char* str) {
+
+	//macro helps in writting the switch case easier.
+	#define chooseKey(key) case str2int(#key): return key
 
 	switch (str2int (str)) {
-		case str2int ("KEY_ARROW_UP"):	return KEY_ARROW_UP;
-		case str2int ("KEY_ARROW_DOWN"):	return KEY_ARROW_DOWN;
-		case str2int ("KEY_ARROW_LEFT"):	return KEY_ARROW_LEFT;
-		case str2int ("KEY_ARROW_RIGHT"):	return KEY_ARROW_RIGHT;
-		case str2int ("KEY_A"):	return KEY_A;
-		case str2int ("KEY_W"):	return KEY_W;
-		case str2int ("KEY_D"):	return KEY_D;
-		case str2int ("KEY_S"):	return KEY_S;
-		case str2int ("KEY_R"):	return KEY_R;
-		case str2int ("KEY_E"):	return KEY_E;
-		case str2int ("KEY_Q"):	return KEY_Q;
-		case str2int ("KEY_Z"):	return KEY_Z;
-		case str2int ("KEY_X"):	return KEY_X;
-		case str2int ("KEY_L"):	return KEY_L;
-		case str2int ("KEY_NUM_8"):	return KEY_NUM_8;
-		case str2int ("KEY_NUM_2"):	return KEY_NUM_2;
-		case str2int ("KEY_NUM_4"):	return KEY_NUM_4;
-		case str2int ("KEY_NUM_6"):	return KEY_NUM_6;
-		case str2int ("KEY_NUM_7"):	return KEY_NUM_7;
-		case str2int ("KEY_ESCAPE"):	return KEY_ESCAPE;
-		case str2int ("KEY_SPACEBAR"):	return KEY_SPACEBAR;
-		case str2int ("KEY_LSHIFT"):	return KEY_LSHIFT;
+		chooseKey (KEY_ARROW_UP);
+		chooseKey (KEY_ARROW_DOWN);
+		chooseKey (KEY_ARROW_LEFT);
+		chooseKey (KEY_ARROW_RIGHT);
+		chooseKey (KEY_A);
+		chooseKey (KEY_B);
+		chooseKey (KEY_C);
+		chooseKey (KEY_D);
+		chooseKey (KEY_E);
+		chooseKey (KEY_F);
+		chooseKey (KEY_G);
+		chooseKey (KEY_H);
+		chooseKey (KEY_I);
+		chooseKey (KEY_J);
+		chooseKey (KEY_K);
+		chooseKey (KEY_L);
+		chooseKey (KEY_M);
+		chooseKey (KEY_N);
+		chooseKey (KEY_O);
+		chooseKey (KEY_P);
+		chooseKey (KEY_Q);
+		chooseKey (KEY_R);
+		chooseKey (KEY_S);
+		chooseKey (KEY_T);
+		chooseKey (KEY_U);
+		chooseKey (KEY_V);
+		chooseKey (KEY_W);
+		chooseKey (KEY_X);
+		chooseKey (KEY_Y);
+		chooseKey (KEY_Z);
+		chooseKey (KEY_F1);
+		chooseKey (KEY_F2);
+		chooseKey (KEY_F3);
+		chooseKey (KEY_F4);
+		chooseKey (KEY_F5);
+		chooseKey (KEY_F6);
+		chooseKey (KEY_F7);
+		chooseKey (KEY_F8);
+		chooseKey (KEY_F9);
+		chooseKey (KEY_F10);
+		chooseKey (KEY_F11);
+		chooseKey (KEY_F12);
+		chooseKey (KEY_BACKSPACE);
+		chooseKey (KEY_ENTER);
+		chooseKey (KEY_TAB);
+		chooseKey (KEY_SHIFT);
+		chooseKey (KEY_CTRL);
+		chooseKey (KEY_ALT);
+		chooseKey (KEY_CAPSLOCK);
+		chooseKey (KEY_PAGEUP);
+		chooseKey (KEY_PAGEDOWN);
+		chooseKey (KEY_ESCAPE);
+		chooseKey (KEY_SPACEBAR);
+		chooseKey (KEY_END);
+		chooseKey (KEY_HOME);
+		chooseKey (KEY_DELETE);
+		chooseKey (KEY_CLEAR);
+		chooseKey (KEY_0);
+		chooseKey (KEY_1);
+		chooseKey (KEY_2);
+		chooseKey (KEY_3);
+		chooseKey (KEY_4);
+		chooseKey (KEY_5);
+		chooseKey (KEY_6);
+		chooseKey (KEY_7);
+		chooseKey (KEY_8);
+		chooseKey (KEY_9);
+		chooseKey (KEY_COMMA);
+		chooseKey (KEY_PERIOD);
+		chooseKey (KEY_NUM_0);
+		chooseKey (KEY_NUM_1);
+		chooseKey (KEY_NUM_2);
+		chooseKey (KEY_NUM_3);
+		chooseKey (KEY_NUM_4);
+		chooseKey (KEY_NUM_5);
+		chooseKey (KEY_NUM_6);
+		chooseKey (KEY_NUM_7);
+		chooseKey (KEY_NUM_8);
+		chooseKey (KEY_NUM_9);
+		chooseKey (KEY_NUM_DECIMAL);
+		chooseKey (KEY_NUM_MINUS);
+		chooseKey (KEY_NUM_PLUS);
+		chooseKey (KEY_NUM_DIVIDE);
+		chooseKey (KEY_NUM_MULTIPLY);
+		chooseKey (KEY_QUESTIONMARK);
+		chooseKey (KEY_FORWARDSLASH);
+		chooseKey (KEY_QUOTE);
+		chooseKey (KEY_CURLYBRACE_OPEN);
+		chooseKey (KEY_CURLYBRACE_CLOSE);
+		chooseKey (KEY_TILDY);
+		chooseKey (KEY_MINUS);
+		chooseKey (KEY_PLUS);
+		chooseKey (KEY_NUMLOCK);
+		chooseKey (KEY_SEPARATOR);
+		chooseKey (KEY_SCROLLLOCK);
+		chooseKey (KEY_NUM_ENTER);
+		chooseKey (KEY_LSHIFT);
+		chooseKey (KEY_RSHIFT);
+		chooseKey (KEY_LCTRL);
+		chooseKey (KEY_RCTRL);
+		chooseKey (KEY_LALT);
+		chooseKey (KEY_RALT);
+		chooseKey (KEY_INSERT);
+		chooseKey (KEY_SEMICOLON);
 	}
-	//keep adding stuff
 	return KEY_IRRELEVENT;
 }
 
-MouseButton atoMouseButton (const char* str) {
+constexpr const MouseButton atoMouseButton (const char* str) {
 	switch (str2int (str)) {
 		case str2int ("MOUSE_BUTTON_L"):return MOUSE_BUTTON_L;
 		case str2int ("MOUSE_BUTTON_M"):return MOUSE_BUTTON_M;
@@ -153,10 +250,12 @@ void InputSystem::handleLoadContextFile (const LoadContextFile msg) {
 
 void InputSystem::handleActivateContext (const ActivateContext msg) {
 
-	const int num_contexts = m_contexts.size ( );
+	const unsigned int num_contexts = m_contexts.size ( );
 
+	//Does a search throgh all the inactive contexts and finds the 
+	//required context.
 	for (int i = 0; i < num_contexts; ++i) {
-		if (m_contexts[i].m_name==msg.contextName) {
+		if (m_contexts[i].m_name==msg.contextName) { //found it
 			//Add it to active list.
 			m_activeContexts.push_back (m_contexts[i]);
 			//remove from main list;
@@ -165,6 +264,9 @@ void InputSystem::handleActivateContext (const ActivateContext msg) {
 			return;
 		}
 	}
+
+	//reaching this point means either the required context is already active
+	//or does not exist.
 }
 
 void InputSystem::handleDeactivateContext (const DeactivateContext msg) {

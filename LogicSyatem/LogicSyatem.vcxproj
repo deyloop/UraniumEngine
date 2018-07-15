@@ -145,6 +145,7 @@
   <ItemGroup>
     <ClInclude Include="Entity.h" />
     <ClInclude Include="LogicSystem.h" />
+    <ClInclude Include="OctTree.h" />
     <ClInclude Include="Transform.h" />
     <ClInclude Include="TransformUpdate.h" />
   </ItemGroup>
