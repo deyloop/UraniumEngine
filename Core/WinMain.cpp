@@ -7,9 +7,9 @@ using namespace u92::core;
 
 /*-----------------------------------------------------------------------------
 Starting point of the Application. Initializes the OSFramework and Core of the
-Engine, then sets it off. Performs cleanup afterwords.
+Engine, then sets it off. Performs cleanup afterwards.
 PARAMETERS:
-[IN] intance		-	Handle to the current instnace of the application.
+[IN] instance		-	Handle to the current instance of the application.
 [IN] prevInstance	-	Handle to the previous instance of the application.
 [IN] cmdLine		-	Contents of the command line arguments.
 [IN] cmdShow		-	Mode in which the application window should be opened

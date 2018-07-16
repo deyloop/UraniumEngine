@@ -7,7 +7,7 @@
 #include <glm/glm/glm.hpp>
 #include <glm/glm/gtx/transform.hpp>
 
-int w = 700,h =700;
+int w = 1000,h =1000;
 
 TestSystem::TestSystem ( ) : m_cam(*(new Camera)){
 	gl = nullptr;
@@ -35,7 +35,7 @@ void TestSystem::init (OSFramework* pOS ) {
 	subscribe (9);
 	subscribe (0);
 
-	(pOS->getOpenGLGraphicsSubSystem())->createWindow("A Better Name Pls",700,700);
+	(pOS->getOpenGLGraphicsSubSystem())->createWindow("Uranium Engine",w,h,true);
 
 	setthreadAfinity (true);
 }

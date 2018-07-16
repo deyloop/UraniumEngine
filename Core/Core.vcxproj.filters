@@ -31,6 +31,12 @@
     <Filter Include="Header Files\Message Structures">
       <UniqueIdentifier>{3c1e585d-c5b6-4199-9e9f-f309ca9c9c81}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Managers">
+      <UniqueIdentifier>{3e478565-e7fc-468a-a386-d05c3b49c815}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Managers\Interfaces">
+      <UniqueIdentifier>{03de5ba0-034d-4493-9633-7f84f360ec86}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MessageBus.cpp">
@@ -163,6 +169,9 @@
     </ClInclude>
     <ClInclude Include="SwapQueue.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IResourceManager.h">
+      <Filter>Header Files\Managers\Interfaces</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
