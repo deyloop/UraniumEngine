@@ -207,8 +207,6 @@ void LogicSystem::tick (const TickMessage msg) {
 		f = false;
 	}
 	
-
-	
 	//GenChunks (campos);
 }
 
@@ -218,7 +216,7 @@ void LogicSystem::GenChunks (glm::vec3 campos) {
 	glm::vec3 chunk = glm::floor (campos/16.0f);
 	//see if we already have this chunk generated.
 
-	const int renderdist = 2;
+	const int renderdist = 8;
 
 	//now, find chunks that need to be generated, and generate one of those chunks this tick
 	glm::vec3 chunToGen;

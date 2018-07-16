@@ -93,19 +93,21 @@ namespace u92 {
 
 		void Core::LoadSystems ( ) {
 			std::ifstream f ("..\\Data\\systems.txt");
-			std::string mod = "";
+			std::string modulename = "";
 			while (!f.eof ( )) {
-				f>>mod;
-				initSystem (mod.c_str ( ));
+				f>>modulename;
+				initSystem (modulename.c_str ( ));
 			}
 		}
 
 		void Core::initSystem (const char * systemModuleName) {
 			System* pSys = m_pOSFramework->loadSystemModule (systemModuleName);
+			if (pSys==nullptr) {
+				return;
+				//TODO: handle this error properly
+			}
 			pSys->init (m_pOSFramework);
 			m_pMessageBus->registerClient (*pSys);
 		}
-
-
 	}
 }

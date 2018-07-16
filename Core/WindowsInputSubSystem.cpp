@@ -65,7 +65,7 @@ namespace u92 {
 			Rid[RAWMOUSEDEVICE].dwFlags		= 0; //we do want legacy mouse input to be active
 			Rid[RAWMOUSEDEVICE].hwndTarget	= window;
 			
-			Rid[RAWKEYBOARDDEVICE].usUsagePage	= 0x01;
+			Rid[RAWKEYBOARDDEVICE].usUsagePage	= HID_USAGE_PAGE_GENERIC;
 			Rid[RAWKEYBOARDDEVICE].usUsage		= 0x06;				//this is the keyboard
 			Rid[RAWKEYBOARDDEVICE].dwFlags		= RIDEV_NOLEGACY;	//No legacy keyboard input wanted
 			Rid[RAWKEYBOARDDEVICE].hwndTarget	= window;
@@ -239,7 +239,7 @@ namespace u92 {
 							 //extract keyboard input data
 				RAWINPUT* raw = reinterpret_cast<RAWINPUT*>(buffer);
 				if (raw->header.dwType==RIM_TYPEKEYBOARD) {
-					if (EvaluateKeyBaordInput (raw->data.keyboard,&event)>=0) {
+					if (EvaluateKeyBoardInput (raw->data.keyboard,&event)>=0) {
 						return 0;
 					}
 				} else if (raw->header.dwType==RIM_TYPEMOUSE && m_mouseRelMode) {
@@ -349,7 +349,7 @@ namespace u92 {
 	}
 
 	
-	int WindowsInputSubSystem::EvaluateKeyBaordInput (const RAWKEYBOARD & rawKB,InputEvent * pEvent) {
+	int WindowsInputSubSystem::EvaluateKeyBoardInput (const RAWKEYBOARD & rawKB,InputEvent * pEvent) {
 		UINT virtualKey = rawKB.VKey;
 		UINT scanCode = rawKB.MakeCode;
 		UINT flags = rawKB.Flags;

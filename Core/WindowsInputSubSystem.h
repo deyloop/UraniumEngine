@@ -43,7 +43,7 @@ namespace u92 {
 		bool m_Init;
 		bool m_mouseRelMode;
 
-		int  EvaluateKeyBaordInput(const RAWKEYBOARD& rawKB, InputEvent* pEvent);
+		int  EvaluateKeyBoardInput(const RAWKEYBOARD& rawKB, InputEvent* pEvent);
 		void setMouseRelMode (bool Relmode);
 	};
 }
