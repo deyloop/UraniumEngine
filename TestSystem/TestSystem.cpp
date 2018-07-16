@@ -36,7 +36,6 @@ void TestSystem::init (OSFramework* pOS ) {
 	subscribe (0);
 
 	(pOS->getOpenGLGraphicsSubSystem())->createWindow("Uranium Engine",w,h,true);
-
 	setthreadAfinity (true);
 }
 
@@ -68,6 +67,8 @@ void TestSystem::threadInit ( ) {
 	m_cam = m_Cameras.back ( );
 	m_cam.SetFOV (90);
 	m_cam.Update ( );
+
+	(m_pOS->getOpenGLGraphicsSubSystem ( ))->setSwapInterval (10);
 }
 
 void TestSystem::handleWindowMessage (const WindowEvent event) {
@@ -142,6 +143,8 @@ void TestSystem::render (const RenderMessage msg) {
 
 	m_font.print ("+",w/2.0f,h/2.0f,30);
 
+	gl->Finish ( );
+
 	m_pOS->getOpenGLGraphicsSubSystem ( )->swapBuffers ( );
 
 }
@@ -203,7 +206,7 @@ unsigned int TestSystem::loadShaders ( ) {
 
 	m_font.SetShaderProgram (&m_FontShader);
 	m_font.LoadFont ("..\\Data\\AliquamREG.ttf",24);
-	Font::SetScreenDimentions (700,700);
+	Font::SetScreenDimentions (w,h);
 	return 0; 
 }
 

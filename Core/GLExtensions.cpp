@@ -2,7 +2,7 @@
 
 PFNWGLCHOOSEPIXELFORMATARBPROC wglChoosePixelFormatARB = nullptr;
 PFNWGLCREATECONTEXTATTRIBSARBPROC wglCreateContextAttribsARB = nullptr;
-
+PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT = nullptr;
 #define LoadGLExtention(name,type)\
     name = reinterpret_cast<type>(wglGetProcAddress( #name ));\
     if(name == nullptr){\
@@ -17,8 +17,8 @@ PFNWGLCREATECONTEXTATTRIBSARBPROC wglCreateContextAttribsARB = nullptr;
 
 bool LoadWGLExtensions() {
 	LoadGLExtention(wglChoosePixelFormatARB, PFNWGLCHOOSEPIXELFORMATARBPROC);
-
 	LoadGLExtention(wglCreateContextAttribsARB, PFNWGLCREATECONTEXTATTRIBSARBPROC);
+	LoadGLExtention (wglSwapIntervalEXT,PFNWGLSWAPINTERVALEXTPROC);
 }
 
 bool LoadGLExtensions(GL& gl) {
@@ -36,8 +36,9 @@ bool LoadGLExtensions(GL& gl) {
 		gl.BindTexture  = glBindTexture;
 		gl.TexImage2D	= glTexImage2D;
 		gl.DeleteTextures = glDeleteTextures;
-		gl.Disable = glDisable;
-		gl.BlendFunc = glBlendFunc;
+		gl.Disable		= glDisable;
+		gl.BlendFunc	= glBlendFunc;
+		gl.Finish		= glFinish;
 
 		LoadGLExtentionGL(glCreateShader,		gl.CreateShader,        PFNGLCREATESHADERPROC);
 		LoadGLExtentionGL(glCreateProgram,		gl.CreateProgram,		PFNGLCREATEPROGRAMPROC);

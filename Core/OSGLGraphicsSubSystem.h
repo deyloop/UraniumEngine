@@ -31,6 +31,7 @@ namespace u92 {
 		virtual void createWindow (const char* title,int width,int hieght,bool fullscreen = false) = 0;
 		virtual bool initOpenGLContext (int versionMajor,int versionMinor) = 0;
 		virtual void swapBuffers ( ) = 0;
+		virtual void setSwapInterval (int interval) = 0;
 
 		virtual GL& getGLInterface ( ) = 0;
 	};

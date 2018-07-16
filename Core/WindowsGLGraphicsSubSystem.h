@@ -41,6 +41,7 @@ namespace u92 {
 		void createWindow (const char* title,int width,int hieght,bool fullscreen = false);
 		bool initOpenGLContext (int versionMajor,int versionMinor);
 		void swapBuffers ( );
+		void setSwapInterval (int interval);
 
 		GL& getGLInterface ( ) { return gl; }
 	private:

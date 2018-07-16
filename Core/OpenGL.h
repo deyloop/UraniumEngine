@@ -9,6 +9,7 @@
 
 extern PFNWGLCHOOSEPIXELFORMATARBPROC wglChoosePixelFormatARB;
 extern PFNWGLCREATECONTEXTATTRIBSARBPROC wglCreateContextAttribsARB;
+extern PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT;
 
 struct GL{
 	 PFNGLCREATESHADERPROC   CreateShader;
@@ -60,6 +61,7 @@ struct GL{
 	 void (__stdcall *DeleteTextures)(GLsizei n, const GLuint* textures);
 	 void (__stdcall *Disable)(GLenum cap);
 	 void (__stdcall *BlendFunc)(GLenum sfactor,GLenum dfactor);
+	 void (__stdcall *Finish)();
 };
 bool LoadGLExtensions(GL& gl);
 bool LoadWGLExtensions();

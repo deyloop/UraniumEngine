@@ -207,6 +207,11 @@ namespace u92 {
 	void WindowsGLGraphicsSubSystem::swapBuffers ( ) {
 		SwapBuffers (m_deviceContext);
 	}
+
+	void WindowsGLGraphicsSubSystem::setSwapInterval (int interval) {
+		wglSwapIntervalEXT (interval);
+	}
+
 	bool WindowsGLGraphicsSubSystem::initGLExtentions ( ) {
 		//To Initialize glew, we need a fake OpenGL Context.
 		//For this Fake Context, We need a fake Pixel Format
