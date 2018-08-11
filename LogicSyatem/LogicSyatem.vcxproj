@@ -71,19 +71,19 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>D:\Documents\Projects\UraniumEngine\Dependencies\Includes;D:\Documents\Projects\UraniumEngine\MessageClient;D:\Documents\Projects\UraniumEngine\Core;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Dependencies\Includes;$(SolutionDir)MessageClient;$(SolutionDir)Core;$(IncludePath)</IncludePath>
     <LibraryPath>$(OutDir);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>D:\Documents\Projects\UraniumEngine\Dependencies\Includes;D:\Documents\Projects\UraniumEngine\MessageClient;D:\Documents\Projects\UraniumEngine\Core;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Dependencies\Includes;$(SolutionDir)MessageClient;$(SolutionDir)Core;$(IncludePath)</IncludePath>
     <LibraryPath>$(OutDir);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>D:\Documents\Projects\UraniumEngine\Dependencies\Includes;D:\Documents\Projects\UraniumEngine\MessageClient;D:\Documents\Projects\UraniumEngine\Core;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Dependencies\Includes;$(SolutionDir)MessageClient;$(SolutionDir)Core;$(IncludePath)</IncludePath>
     <LibraryPath>$(OutDir);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>D:\Documents\Projects\UraniumEngine\Dependencies\Includes;D:\Documents\Projects\UraniumEngine\MessageClient;D:\Documents\Projects\UraniumEngine\Core;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Dependencies\Includes;$(SolutionDir)MessageClient;$(SolutionDir)Core;$(IncludePath)</IncludePath>
     <LibraryPath>$(OutDir);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">

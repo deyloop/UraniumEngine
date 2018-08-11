@@ -35,7 +35,7 @@ void TestSystem::init (OSFramework* pOS ) {
 	subscribe (9);
 	subscribe (0);
 
-	(pOS->getOpenGLGraphicsSubSystem())->createWindow("Uranium Engine",w,h,true);
+	(pOS->getOpenGLGraphicsSubSystem())->createWindow("Uranium Engine",w,h);
 	setthreadAfinity (true);
 }
 

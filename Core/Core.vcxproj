@@ -70,24 +70,24 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>D:\Documents\Projects\UraniumEngine\MessageClient;D:\Documents\Projects\UraniumEngine\Dependencies\Includes;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)MessageClient;D:\Documents\Projects\UraniumEngine\Dependencies\Includes;$(IncludePath)</IncludePath>
     <LibraryPath>$(OutDir);$(LibraryPath)</LibraryPath>
-    <ExecutablePath>D:\Documents\Projects\UraniumEngine\Dependencies\DLLs\x86;$(ExecutablePath)</ExecutablePath>
+    <ExecutablePath>$(SolutionDir)Dependencies\DLLs\x86;$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>D:\Documents\Projects\UraniumEngine\MessageClient;D:\Documents\Projects\UraniumEngine\Dependencies\Includes;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)MessageClient;D:\Documents\Projects\UraniumEngine\Dependencies\Includes;$(IncludePath)</IncludePath>
     <LibraryPath>$(OutDir);$(LibraryPath)</LibraryPath>
-    <ExecutablePath>D:\Documents\Projects\UraniumEngine\Dependencies\DLLs\x86;$(ExecutablePath)</ExecutablePath>
+    <ExecutablePath>$(SolutionDir)Dependencies\DLLs\x86;$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>D:\Documents\Projects\UraniumEngine\MessageClient;D:\Documents\Projects\UraniumEngine\Dependencies\Includes;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)MessageClient;D:\Documents\Projects\UraniumEngine\Dependencies\Includes;$(IncludePath)</IncludePath>
     <LibraryPath>$(OutDir);$(LibraryPath)</LibraryPath>
-    <ExecutablePath>D:\Documents\Projects\UraniumEngine\Dependencies\DLLs\x64;$(ExecutablePath)</ExecutablePath>
+    <ExecutablePath>$(SolutionDir)Dependencies\DLLs\x64;$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>D:\Documents\Projects\UraniumEngine\MessageClient;D:\Documents\Projects\UraniumEngine\Dependencies\Includes;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)MessageClient;D:\Documents\Projects\UraniumEngine\Dependencies\Includes;$(IncludePath)</IncludePath>
     <LibraryPath>$(OutDir);$(LibraryPath)</LibraryPath>
-    <ExecutablePath>D:\Documents\Projects\UraniumEngine\Dependencies\DLLs\x64;$(ExecutablePath)</ExecutablePath>
+    <ExecutablePath>$(SolutionDir)Dependencies\DLLs\x64;$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
