@@ -73,7 +73,7 @@ namespace u92 {
 							std::unique_lock<std::mutex> lock (this->queue_mutex);
 							this->condition.wait (lock,
 												  [this,i] { return this->stop||!this->tasks.empty ( ) || !this->threadSpecificQueues[i].empty(); });
-							if (this->stop && this->tasks.empty ( ))
+						if (this->stop && this->tasks.empty ( ))
 								return;
 							if (!this->threadSpecificQueues[i].empty ( )) continue;
 							task = std::move (this->tasks.front ( ));

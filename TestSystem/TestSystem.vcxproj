@@ -82,13 +82,13 @@
     <ExecutablePath>$(SolutionDir)Dependencies\DLLs\x86;$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir)MessageClient;$(SolutionDir)Core;$(SolutionDir)Dependencies\Includes;$(SolutionDir)Dependencies\Includes\FreeType;(SolutionDir)Dependencies\Includes\FreeImage\x64;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)MessageClient;$(SolutionDir)Core;$(SolutionDir)Dependencies\Includes;$(SolutionDir)Dependencies\Includes\FreeType;$(SolutionDir)Dependencies\Includes\FreeImage\x64;$(IncludePath)</IncludePath>
     <LibraryWPath>$(LibraryWPath)</LibraryWPath>
     <LibraryPath>$(SolutionDir)Dependencies\Libs\x64\Debug;$(OutDir);$(LibraryPath)</LibraryPath>
     <ExecutablePath>$(SolutionDir)Dependencies\DLLs\x64;$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(SolutionDir)MessageClient;$(SolutionDir)Core;$(SolutionDir)Dependencies\Includes;$(SolutionDir)Dependencies\Includes\FreeType;(SolutionDir)Dependencies\Includes\FreeImage\x64;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)MessageClient;$(SolutionDir)Core;$(SolutionDir)Dependencies\Includes;$(SolutionDir)Dependencies\Includes\FreeType;$(SolutionDir)Dependencies\Includes\FreeImage\x64;$(IncludePath)</IncludePath>
     <LibraryWPath>$(LibraryWPath)</LibraryWPath>
     <LibraryPath>$(SolutionDir)Dependencies\Libs\x64\Release;$(OutDir);$(LibraryPath)</LibraryPath>
     <ExecutablePath>$(SolutionDir)Dependencies\DLLs\x64;$(ExecutablePath)</ExecutablePath>
